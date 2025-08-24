@@ -1,0 +1,103 @@
+{
+  "company": {
+    "name": "SCALA TRANSPORTE E ADMINISTRACAO LTDA.",
+    "cnpj": "88.501.093/0001-89",
+    "logo_detected": true
+  },
+  "employee": {
+    "name": "ANDRE LUIS DE MORAES DA ROSA",
+    "cpf": "019.450.890-08",
+    "cpf_valid": true
+  },
+  "period": {
+    "start": "21/05/2025",
+    "end": "20/06/2025"
+  },
+  "summary": {
+    "period": "21/05/2025 a 20/06/2025",
+    "total_days": 3,
+    "work_days": 3,
+    "complete_workdays": 3,
+    "total_hours": 19.83,
+    "average_daily_hours": 6.61,
+    "total_time_entries": 12
+  },
+  "entries": [
+    {
+      "date": "25/05/25 dom",
+      "parsed_date": "2025-05-25T00:00:00",
+      "times": [
+        "07:37",
+        "08:00",
+        "10:08",
+        "13:35"
+      ],
+      "day_type": "dia_util",
+      "work_periods": [
+        [
+          "07:37",
+          "08:00"
+        ],
+        [
+          "10:08",
+          "13:35"
+        ]
+      ],
+      "total_hours": 3.83,
+      "complete_workday": true,
+      "observations": null
+    },
+    {
+      "date": "26/05/25 seg",
+      "parsed_date": "2025-05-26T00:00:00",
+      "times": [
+        "08:00",
+        "12:00",
+        "13:00",
+        "17:00"
+      ],
+      "day_type": "dia_util",
+      "work_periods": [
+        [
+          "08:00",
+          "12:00"
+        ],
+        [
+          "13:00",
+          "17:00"
+        ]
+      ],
+      "total_hours": 8.0,
+      "complete_workday": true,
+      "observations": null
+    },
+    {
+      "date": "27/05/25 ter",
+      "parsed_date": "2025-05-27T00:00:00",
+      "times": [
+        "08:15",
+        "12:15",
+        "13:15",
+        "17:15"
+      ],
+      "day_type": "dia_util",
+      "work_periods": [
+        [
+          "08:15",
+          "12:15"
+        ],
+        [
+          "13:15",
+          "17:15"
+        ]
+      ],
+      "total_hours": 8.0,
+      "complete_workday": true,
+      "observations": null
+    }
+  ],
+  "metadata": {
+    "extracted_at": "2025-08-24T15:24:07.414446",
+    "source": "PDF"
+  }
+}

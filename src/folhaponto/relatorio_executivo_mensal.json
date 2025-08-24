@@ -1,0 +1,144 @@
+{
+  "employee": {
+    "name": "ANDRE LUIS DE MORAES DA ROSA",
+    "cpf": "019.450.890-08"
+  },
+  "company": {
+    "name": "SCALA TRANSPORTE E ADMINISTRACAO LTDA.",
+    "cnpj": "88.501.093/0001-89"
+  },
+  "period": "21/05/2025 a 20/06/2025",
+  "summary": {
+    "total_days_worked": 26,
+    "total_hours": 210.57,
+    "regular_hours": 165.8,
+    "overtime_hours": 44.77,
+    "compliance_rate": 42.3,
+    "risk_level": "CRÍTICO"
+  },
+  "performance_indicators": {
+    "punctuality_score": 100.0,
+    "consistency_score": 24.7,
+    "overtime_frequency": 53.8
+  },
+  "compliance_details": {
+    "total_days": 26,
+    "compliant_days": 11,
+    "non_compliant_days": 15,
+    "compliance_rate": 42.3,
+    "total_violations": 31,
+    "violation_types": {
+      "jornada_excessiva": 10,
+      "horas_extras_excessivas": 10,
+      "intervalo_insuficiente": 11
+    },
+    "risk_level": "CRÍTICO"
+  },
+  "hours_details": {
+    "period": "21/05/2025 a 20/06/2025",
+    "total_regular_hours": 165.8,
+    "total_overtime_hours": 44.77,
+    "total_hours": 210.57,
+    "average_daily_hours": 8.1,
+    "overtime_percentage": 21.3,
+    "weekly_summaries": [
+      {
+        "period": "21/05/25 qua a 27/05/25 ter",
+        "days_worked": 7,
+        "total_regular_hours": 47.1,
+        "total_overtime_hours": 13.78,
+        "weekly_overtime": 16.88,
+        "total_hours": 60.88,
+        "average_daily_hours": 8.7,
+        "compliant_days": 3,
+        "violation_count": 10,
+        "violations": [
+          "Jornada excessiva: 10.9h (máx: 10.0h)",
+          "Horas extras excessivas: 2.9h (máx: 2.0h)",
+          "Intervalo insuficiente: 0.1h (mín: 1.0h)",
+          "Jornada excessiva: 13.6h (máx: 10.0h)",
+          "Horas extras excessivas: 5.6h (máx: 2.0h)",
+          "Intervalo insuficiente: 0.0h (mín: 1.0h)",
+          "Jornada excessiva: 13.0h (máx: 10.0h)",
+          "Horas extras excessivas: 5.0h (máx: 2.0h)",
+          "Intervalo insuficiente: 0.8h (mín: 1.0h)",
+          "Limite semanal excedido: 60.9h (máx: 44.0h)"
+        ],
+        "weekly_compliant": false
+      },
+      {
+        "period": "28/05/25 qua a 03/06/25 ter",
+        "days_worked": 7,
+        "total_regular_hours": 42.97,
+        "total_overtime_hours": 16.78,
+        "weekly_overtime": 15.75,
+        "total_hours": 59.75,
+        "average_daily_hours": 8.54,
+        "compliant_days": 3,
+        "violation_count": 11,
+        "violations": [
+          "Jornada excessiva: 10.2h (máx: 10.0h)",
+          "Horas extras excessivas: 2.2h (máx: 2.0h)",
+          "Intervalo insuficiente: 0.3h (mín: 1.0h)",
+          "Jornada excessiva: 14.7h (máx: 10.0h)",
+          "Horas extras excessivas: 6.7h (máx: 2.0h)",
+          "Intervalo insuficiente: 1.0h (mín: 1.0h)",
+          "Jornada excessiva: 12.3h (máx: 10.0h)",
+          "Horas extras excessivas: 4.3h (máx: 2.0h)",
+          "Jornada excessiva: 11.6h (máx: 10.0h)",
+          "Horas extras excessivas: 3.6h (máx: 2.0h)",
+          "Limite semanal excedido: 59.7h (máx: 44.0h)"
+        ],
+        "weekly_compliant": false
+      },
+      {
+        "period": "04/06/25 qua a 12/06/25 qui",
+        "days_worked": 7,
+        "total_regular_hours": 40.17,
+        "total_overtime_hours": 6.55,
+        "weekly_overtime": 2.72,
+        "total_hours": 46.72,
+        "average_daily_hours": 6.67,
+        "compliant_days": 4,
+        "violation_count": 7,
+        "violations": [
+          "Jornada excessiva: 12.1h (máx: 10.0h)",
+          "Horas extras excessivas: 4.1h (máx: 2.0h)",
+          "Intervalo insuficiente: 0.2h (mín: 1.0h)",
+          "Jornada excessiva: 10.4h (máx: 10.0h)",
+          "Horas extras excessivas: 2.4h (máx: 2.0h)",
+          "Intervalo insuficiente: 0.0h (mín: 1.0h)",
+          "Limite semanal excedido: 46.7h (máx: 44.0h)"
+        ],
+        "weekly_compliant": false
+      },
+      {
+        "period": "13/06/25 sex a 19/06/25 qui",
+        "days_worked": 5,
+        "total_regular_hours": 35.57,
+        "total_overtime_hours": 7.65,
+        "weekly_overtime": 0.0,
+        "total_hours": 43.22,
+        "average_daily_hours": 8.64,
+        "compliant_days": 1,
+        "violation_count": 6,
+        "violations": [
+          "Intervalo insuficiente: 0.0h (mín: 1.0h)",
+          "Jornada excessiva: 12.8h (máx: 10.0h)",
+          "Horas extras excessivas: 4.8h (máx: 2.0h)",
+          "Intervalo insuficiente: 0.0h (mín: 1.0h)",
+          "Intervalo insuficiente: 0.0h (mín: 1.0h)",
+          "Intervalo insuficiente: 0.0h (mín: 1.0h)"
+        ],
+        "weekly_compliant": true
+      }
+    ]
+  },
+  "patterns_details": {
+    "most_common_entry": "01:10",
+    "most_common_exit": "11:19",
+    "punctuality_score": 100.0,
+    "consistency_score": 24.7,
+    "overtime_frequency": 53.8
+  }
+}

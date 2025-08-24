@@ -1,0 +1,99 @@
+{
+  "generated_at": "2025-08-24T15:33:58.308583",
+  "employee": {
+    "name": "ANDRE LUIS DE MORAES DA ROSA",
+    "period": "21/05/2025 a 20/06/2025"
+  },
+  "risk_assessment": {
+    "level": "CRÍTICO",
+    "compliance_rate": 42.3,
+    "total_violations": 31
+  },
+  "kpis": {
+    "punctuality": 100.0,
+    "consistency": 24.7,
+    "overtime_frequency": 53.8
+  },
+  "action_plan": {
+    "summary": {
+      "total_alerts": 4,
+      "critical_alerts": 1,
+      "urgent_alerts": 2,
+      "recommendations": 3
+    },
+    "immediate_actions": [
+      {
+        "level": "CRÍTICO",
+        "type": "RISCO_TRABALHISTA",
+        "title": "🚨 RISCO TRABALHISTA CRÍTICO",
+        "message": "Detectadas 31 violações trabalhistas. Ação imediata necessária.",
+        "action_required": "Revisar jornadas e implementar medidas corretivas",
+        "deadline": "72 horas"
+      }
+    ],
+    "urgent_actions": [
+      {
+        "level": "ALTO",
+        "type": "JORNADA_EXCESSIVA",
+        "title": "⏰ JORNADAS EXCESSIVAS DETECTADAS",
+        "message": "10 dia(s) com jornada superior a 10 horas.",
+        "action_required": "Reduzir jornada diária ou redistribuir cargas de trabalho",
+        "deadline": "7 dias"
+      },
+      {
+        "level": "ALTO",
+        "type": "INTERVALO_INSUFICIENTE",
+        "title": "🍽️ INTERVALOS INSUFICIENTES",
+        "message": "11 dia(s) com intervalo de almoço inferior a 1 hora.",
+        "action_required": "Garantir intervalo mínimo de 1 hora para refeição",
+        "deadline": "Imediato"
+      }
+    ],
+    "medium_priority_actions": [
+      {
+        "level": "MÉDIO",
+        "type": "HORAS_EXTRAS_EXCESSIVAS",
+        "title": "⏳ HORAS EXTRAS EXCESSIVAS",
+        "message": "10 dia(s) com mais de 2 horas extras.",
+        "action_required": "Limitar horas extras a 2h/dia conforme legislação",
+        "deadline": "15 dias"
+      }
+    ],
+    "recommendations": [
+      {
+        "category": "CONFORMIDADE",
+        "priority": "ALTA",
+        "title": "📊 MELHORAR TAXA DE CONFORMIDADE",
+        "description": "Taxa atual: 42.3%. Meta: >80%",
+        "actions": [
+          "Implementar controle mais rigoroso de horários",
+          "Treinar gestores sobre legislação trabalhista",
+          "Automatizar alertas preventivos"
+        ]
+      },
+      {
+        "category": "OPERACIONAL",
+        "priority": "MÉDIA",
+        "title": "📈 MELHORAR CONSISTÊNCIA DE JORNADA",
+        "description": "Score de consistência: 24.7%. Meta: >75%",
+        "actions": [
+          "Estabelecer horários fixos de entrada e saída",
+          "Reduzir variabilidade na carga de trabalho",
+          "Implementar planejamento semanal"
+        ]
+      },
+      {
+        "category": "GESTÃO",
+        "priority": "ALTA",
+        "title": "⏳ REDUZIR FREQUÊNCIA DE HORAS EXTRAS",
+        "description": "Frequência atual: 53.8%. Meta: <30%",
+        "actions": [
+          "Analisar carga de trabalho e redistribuir tarefas",
+          "Contratar funcionários adicionais se necessário",
+          "Implementar melhorias de produtividade"
+        ]
+      }
+    ],
+    "next_review_date": "30 dias"
+  }
+}
