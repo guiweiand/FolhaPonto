@@ -1,0 +1,27 @@
+{
+  "arquivo_processado": "../../test_sample/Ficha_Ponto_Simplificada_André_Luis.pdf",
+  "data_extracao": "2025-08-24T14:29:08.493341",
+  "dados_extraidos": {
+    "company": {
+      "name": "SCALA TRANSPORTE E ADMINISTRACAO LTDA.",
+      "cnpj": "88.501.093/0001-89",
+      "logo_detected": true
+    },
+    "employee": {
+      "name": "ANDRE LUIS DE MORAES DA ROSA",
+      "cpf": "019.450.890-08"
+    },
+    "period": {
+      "start_date": "21/05/2025",
+      "end_date": "20/06/2025",
+      "month": 5,
+      "year": 2025,
+      "reference_period": "Maio/2025"
+    }
+  },
+  "estatisticas": {
+    "total_campos": 10,
+    "campos_extraidos": 10,
+    "taxa_sucesso": "100.0%"
+  }
+}
