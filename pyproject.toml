@@ -30,6 +30,8 @@ classifiers = [
 dependencies = [
     "PyMuPDF>=1.23.0",
     "pandas>=1.5.0",
+    "plotly>=6.3.0",
+    "streamlit>=1.40.1",
 ]
 
 [project.optional-dependencies]
