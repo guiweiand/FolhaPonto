@@ -508,6 +508,52 @@ else:
                 <em>Prazo: Imediato</em>
             </div>
             """, unsafe_allow_html=True)
+            
+            # Visão detalhada dos alertas de horas excessivas
+            with st.expander("📊 Ver Detalhes das Jornadas Excessivas", expanded=False):
+                st.markdown("### 🕐 JORNADAS DIÁRIAS EXCESSIVAS:")
+                
+                for i, issue in enumerate(detailed_problems.get('excessive_daily_hours', []), 1):
+                    details = issue.get('details', '')
+                    # Extrair informações do texto de detalhes
+                    if 'Jornada trabalhada' in details and 'excesso:' in details:
+                        try:
+                            parts = details.split(', ')
+                            jornada_part = parts[0].replace('Jornada trabalhada ', '')
+                            excesso_part = parts[1].replace('excesso: ', '')
+                            
+                            # Tentar extrair a data do timesheet_data correspondente
+                            timesheet_data = compliance_data.get('timesheet_data', [])
+                            data_info = "Data não identificada"
+                            
+                            # Buscar a entrada correspondente no timesheet
+                            for entry in timesheet_data:
+                                if entry.get('jornada_diaria') == jornada_part:
+                                    data_info = entry.get('data', 'Data não identificada')
+                                    break
+                            
+                            # Layout horizontal compacto para as informações da data
+                            st.markdown(f"""
+                            <div style='display: inline-flex; gap: 20px; padding: 8px 12px; margin: 2px 0; background-color: #ffebee; border-left: 5px solid #f44336; border-radius: 5px; color: #c62828; font-weight: 500; width: fit-content;'>
+                                <span style='min-width: 140px;'><strong>📅 {data_info}</strong></span>
+                                <span style='min-width: 150px;'><strong>⏰ Trabalhada:</strong> {jornada_part}</span>
+                                <span style='min-width: 130px;'><strong>✅ Normal:</strong> 08:00</span>
+                                <span style='min-width: 120px;'><strong>⚠️ Excesso:</strong> {excesso_part}</span>
+                            </div>
+                            """, unsafe_allow_html=True)
+                            
+                        except (IndexError, ValueError):
+                            st.markdown(f"""
+                            <div style='padding: 8px 12px; margin: 2px 0; background-color: #ffebee; border-left: 5px solid #f44336; border-radius: 5px; color: #c62828; font-weight: 500;'>
+                                <strong>📅 Registro {i}:</strong> {details}
+                            </div>
+                            """, unsafe_allow_html=True)
+                    else:
+                        st.markdown(f"""
+                        <div style='padding: 8px 12px; margin: 2px 0; background-color: #ffebee; border-left: 5px solid #f44336; border-radius: 5px; color: #c62828; font-weight: 500;'>
+                            <strong>📅 Registro {i}:</strong> {details}
+                        </div>
+                        """, unsafe_allow_html=True)
         
         # Ações urgentes para períodos de descanso
         if rest_periods > 0:
@@ -521,6 +567,51 @@ else:
             </div>
             """, unsafe_allow_html=True)
             
+            # Visão detalhada dos alertas de descanso insuficiente
+            with st.expander("📊 Ver Detalhes dos Períodos de Descanso Insuficientes", expanded=False):
+                st.markdown("### 😴 PERÍODOS DE DESCANSO INSUFICIENTES:")
+                
+                for i, issue in enumerate(detailed_problems.get('insufficient_rest_periods', []), 1):
+                    details = issue.get('details', '')
+                    # Extrair informações do texto de detalhes
+                    if 'Período de descanso:' in details and 'necessário:' in details:
+                        try:
+                            parts = details.split(', ')
+                            descanso_part = parts[0].replace('Período de descanso: ', '')
+                            necessario_part = parts[1].replace('necessário: ', '')
+                            
+                            # Calcular tempo faltante
+                            try:
+                                descanso_hours = time_to_hours(descanso_part)
+                                necessario_hours = time_to_hours(necessario_part)
+                                faltante_hours = necessario_hours - descanso_hours
+                                faltante_str = hours_to_time(faltante_hours)
+                            except:
+                                faltante_str = "Cálculo indisponível"
+                            
+                            # Layout horizontal compacto para as informações do período
+                            st.markdown(f"""
+                            <div style='display: inline-flex; gap: 20px; padding: 8px 12px; margin: 2px 0; background-color: #fff3e0; border-left: 5px solid #ff9800; border-radius: 5px; color: #e65100; font-weight: 500; width: fit-content;'>
+                                <span style='min-width: 140px;'><strong>📅 Período {i}</strong></span>
+                                <span style='min-width: 150px;'><strong>😴 Obtido:</strong> {descanso_part}</span>
+                                <span style='min-width: 130px;'><strong>✅ Obrigatório:</strong> {necessario_part}</span>
+                                <span style='min-width: 120px;'><strong>❌ Faltante:</strong> {faltante_str}</span>
+                            </div>
+                            """, unsafe_allow_html=True)
+                            
+                        except (IndexError, ValueError):
+                            st.markdown(f"""
+                            <div style='padding: 8px 12px; margin: 2px 0; background-color: #fff3e0; border-left: 5px solid #ff9800; border-radius: 5px; color: #e65100; font-weight: 500;'>
+                                <strong>📅 Período {i}:</strong> {details}
+                            </div>
+                            """, unsafe_allow_html=True)
+                    else:
+                        st.markdown(f"""
+                        <div style='padding: 8px 12px; margin: 2px 0; background-color: #fff3e0; border-left: 5px solid #ff9800; border-radius: 5px; color: #e65100; font-weight: 500;'>
+                            <strong>📅 Período {i}:</strong> {details}
+                        </div>
+                        """, unsafe_allow_html=True)
+            
         # Ações para intervalos de refeição
         if meal_breaks > 0:
             st.subheader("📋 Ações Preventivas - Intervalos de Refeição")
@@ -532,6 +623,52 @@ else:
                 <em>Prazo: 7 dias</em>
             </div>
             """, unsafe_allow_html=True)
+            
+            # Visão detalhada dos alertas de intervalos de refeição
+            with st.expander("📊 Ver Detalhes dos Intervalos de Refeição Irregulares", expanded=False):
+                st.markdown("### 🍽️ INTERVALOS DE REFEIÇÃO INSUFICIENTES:")
+                
+                for i, issue in enumerate(detailed_problems.get('insufficient_meal_breaks', []), 1):
+                    details = issue.get('details', '')
+                    # Extrair informações do texto de detalhes
+                    if 'Intervalo de refeição:' in details and 'necessário:' in details:
+                        try:
+                            parts = details.split(', ')
+                            intervalo_part = parts[0].replace('Intervalo de refeição: ', '')
+                            necessario_part = parts[1].replace('necessário: ', '')
+                            
+                            # Tentar extrair a data do timesheet_data correspondente
+                            timesheet_data = compliance_data.get('timesheet_data', [])
+                            data_info = "Data não identificada"
+                            
+                            # Buscar a entrada correspondente no timesheet (sem intervalo ou com intervalo insuficiente)
+                            for entry in timesheet_data:
+                                if not entry.get('total_refeicao') or entry.get('total_refeicao') == '':
+                                    data_info = entry.get('data', 'Data não identificada')
+                                    break
+                            
+                            # Layout horizontal compacto para as informações da data
+                            st.markdown(f"""
+                            <div style='display: inline-flex; gap: 20px; padding: 8px 12px; margin: 2px 0; background-color: #fff3e0; border-left: 5px solid #ff9800; border-radius: 5px; color: #e65100; font-weight: 500; width: fit-content;'>
+                                <span style='min-width: 140px;'><strong>📅 {data_info}</strong></span>
+                                <span style='min-width: 150px;'><strong>🍽️ Registrado:</strong> {intervalo_part}</span>
+                                <span style='min-width: 130px;'><strong>✅ Obrigatório:</strong> {necessario_part}</span>
+                                <span style='min-width: 120px;'><strong>⚠️ Status:</strong> Não conforme</span>
+                            </div>
+                            """, unsafe_allow_html=True)
+                            
+                        except (IndexError, ValueError):
+                            st.markdown(f"""
+                            <div style='padding: 8px 12px; margin: 2px 0; background-color: #fff3e0; border-left: 5px solid #ff9800; border-radius: 5px; color: #e65100; font-weight: 500;'>
+                                <strong>📅 Ocorrência {i}:</strong> {details}
+                            </div>
+                            """, unsafe_allow_html=True)
+                    else:
+                        st.markdown(f"""
+                        <div style='padding: 8px 12px; margin: 2px 0; background-color: #fff3e0; border-left: 5px solid #ff9800; border-radius: 5px; color: #e65100; font-weight: 500;'>
+                            <strong>📅 Ocorrência {i}:</strong> {details}
+                        </div>
+                        """, unsafe_allow_html=True)
 
     # Análise de jornada mensal
     if 'period_totals' in data:
