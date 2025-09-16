@@ -124,12 +124,12 @@ def get_risk_color(level):
     }
     return colors.get(level, '#757575')
 
-def find_data_files():
-    """Busca os arquivos de dados em múltiplos locais possíveis"""
+def find_data_file():
+    """Busca o arquivo de dados unificado timesheet_webapp_data.json"""
     current_dir = Path(__file__).parent
     parent_dir = current_dir.parent
     
-    # Locais possíveis para os arquivos
+    # Locais possíveis para o arquivo
     possible_locations = [
         # Diretório pai do projeto
         parent_dir,
@@ -139,25 +139,77 @@ def find_data_files():
         current_dir,
     ]
     
-    # Arquivos específicos a buscar
-    target_files = [
-        ("timesheet_clean_final.json", "Dados Limpos do Timesheet"),
-        ("dashboard_data_complete.json", "Dados Completos do Dashboard"), 
-        ("compliance_dashboard.json", "Relatório de Conformidade")
-    ]
-    
-    found_files = []
+    # Arquivo específico a buscar
+    target_filename = "timesheet_webapp_data.json"
     
     for location in possible_locations:
         if location.exists():
-            for filename, file_type in target_files:
-                file_path = location / filename
-                if file_path.exists():
-                    # Evitar duplicatas
-                    if not any(existing_type == file_type for existing_type, _ in found_files):
-                        found_files.append((file_type, str(file_path)))
+            file_path = location / target_filename
+            if file_path.exists():
+                return str(file_path)
     
-    return found_files
+    return None
+
+def process_timesheet_data_for_charts(timesheet_data):
+    """Converte os dados do timesheet para o formato esperado pelos gráficos"""
+    daily_analysis = []
+    
+    for entry in timesheet_data:
+        # Pular entradas que não são de trabalho
+        if entry.get('tipo') not in ['Trabalho', 'Feriado']:
+            continue
+            
+        # Pular entradas sem jornada
+        if not entry.get('jornada_diaria'):
+            continue
+            
+        # Extrair e converter data
+        data_str = entry.get('data', '')
+        # Converter formato "21/05/25 qua" para datetime
+        try:
+            data_parts = data_str.split(' ')[0]  # Pegar apenas a parte da data
+            day, month, year = data_parts.split('/')
+            # Assumir que anos de 2 dígitos são 20XX
+            if len(year) == 2:
+                year = '20' + year
+            data_iso = f"{year}-{month}-{day}"
+            
+            # Converter horas trabalhadas de "HH:MM" para decimal
+            jornada_str = entry.get('jornada_diaria', '00:00')
+            horas_trabalhadas = time_to_hours(jornada_str)
+            
+            # Converter intervalo de refeição
+            refeicao_str = entry.get('total_refeicao', '00:00')
+            intervalo_almoco = time_to_hours(refeicao_str)
+            
+            # Criar observações baseadas no tipo e problemas
+            observacoes = ""
+            if entry.get('tipo') == 'Feriado':
+                observacoes = "Trabalho em feriado"
+            elif horas_trabalhadas > 8:
+                excesso = horas_trabalhadas - 8
+                observacoes = f"Excesso de {excesso:.1f}h - possível irregularidade"
+            elif horas_trabalhadas < 8:
+                observacoes = "Jornada abaixo do normal"
+            
+            daily_entry = {
+                'data': data_iso,
+                'entrada': entry.get('jornada_inicio', ''),
+                'saida_almoco': '',  # Não disponível nos dados atuais
+                'retorno_almoco': '',  # Não disponível nos dados atuais
+                'saida': entry.get('jornada_fim', ''),
+                'horas_trabalhadas': horas_trabalhadas,
+                'intervalo_almoco': intervalo_almoco,
+                'observacoes': observacoes
+            }
+            
+            daily_analysis.append(daily_entry)
+            
+        except (ValueError, IndexError, AttributeError):
+            # Pular entradas com problemas na data
+            continue
+    
+    return daily_analysis
 
 # Título principal
 st.markdown("""
@@ -172,26 +224,56 @@ if 'current_page' not in st.session_state:
     st.session_state.current_page = "home"
 
 # Carregar dados usando a função de busca
-available_files = find_data_files()
+data_file_path = find_data_file()
 
-# Sidebar para seleção de arquivos
-st.sidebar.header("📁 Seleção de Dados")
-selected_file = st.sidebar.selectbox(
-    "Escolha o arquivo de dados:",
-    options=[file[1] for file in available_files],
-    format_func=lambda x: next((name for name, path in available_files if path == x), x)
-)
+if not data_file_path:
+    st.error("Arquivo de dados 'timesheet_webapp_data.json' não encontrado!")
+    st.info("Certifique-se de que o arquivo está em um dos seguintes locais:")
+    st.info("- Diretório raiz do projeto")
+    st.info("- src/folhaponto/")
+    st.info("- dashboard/")
+    st.stop()
 
-# Carregar dados selecionados
-data = load_json_data(selected_file)
+# Sidebar para informações do arquivo
+st.sidebar.header("📁 Dados Carregados")
+st.sidebar.success("✅ timesheet_webapp_data.json")
+st.sidebar.write(f"**Localização:** {Path(data_file_path).name}")
+
+# Carregar dados
+data = load_json_data(data_file_path)
 if data is None:
     st.stop()
 
 # Extrair informações básicas
 employee_info = data.get('employee', {})
 company_info = data.get('company', {})
-period_info = data.get('period', {})
-summary_info = data.get('summary', {})
+period_info = data.get('period', 'N/A')
+
+# Calcular summary_info a partir dos dados disponíveis
+timesheet_data = data.get('timesheet_data', [])
+working_days = len([entry for entry in timesheet_data if entry.get('tipo') == 'Trabalho'])
+total_days = len(timesheet_data)
+
+# Calcular total de horas trabalhadas
+total_hours = 0
+total_meal_hours = 0
+for entry in timesheet_data:
+    if entry.get('jornada_diaria'):
+        total_hours += time_to_hours(entry.get('jornada_diaria', '00:00'))
+    if entry.get('total_refeicao'):
+        total_meal_hours += time_to_hours(entry.get('total_refeicao', '00:00'))
+
+# Pegar problemas de conformidade
+compliance_summary = data.get('compliance_summary', {})
+issues_count = compliance_summary.get('total_compliance_issues', 0)
+
+summary_info = {
+    'total_days': total_days,
+    'work_days': working_days,
+    'total_hours_worked': total_hours,
+    'total_meal_break_hours': total_meal_hours,
+    'compliance_issues_count': issues_count
+}
 
 # Sidebar - Informações do funcionário
 st.sidebar.markdown("---")
@@ -200,13 +282,12 @@ st.sidebar.write(f"**Nome:** {employee_info.get('name', 'N/A')}")
 st.sidebar.write(f"**CPF:** {employee_info.get('cpf', 'N/A')}")
 st.sidebar.write(f"**Empresa:** {company_info.get('name', 'N/A')}")
 st.sidebar.write(f"**CNPJ:** {company_info.get('cnpj', 'N/A')}")
-st.sidebar.write(f"**Período:** {period_info.get('description', 'N/A')}")
+st.sidebar.write(f"**Período:** {period_info}")
 
-# Mostrar status dos arquivos carregados
+# Mostrar informações do arquivo carregado
 st.sidebar.markdown("---")
 st.sidebar.header("📊 Dados Carregados")
-for file_type, _ in available_files:
-    st.sidebar.write(f"✅ {file_type}")
+st.sidebar.write("✅ Dados Unificados do Timesheet")
 
 # Botão para visualizar PDF
 st.sidebar.markdown("---")
@@ -224,16 +305,8 @@ if st.sidebar.button("📋 Ver Ficha de Ponto (PDF)", use_container_width=True):
     else:
         st.sidebar.error(f"PDF não encontrado: {pdf_path}")
 
-# Verificar se há dados de compliance
-compliance_data = None
-if 'risk_assessment' in data:
-    compliance_data = data
-else:
-    # Buscar arquivo de compliance separadamente
-    for file_type, file_path in available_files:
-        if "Conformidade" in file_type:
-            compliance_data = load_json_data(file_path)
-            break
+# Verificar se há dados de compliance (agora tudo está no mesmo arquivo)
+compliance_data = data  # Todos os dados estão no mesmo arquivo agora
 
 # === NAVEGAÇÃO ENTRE PÁGINAS ===
 if st.session_state.current_page == "pdf_viewer":
@@ -284,17 +357,32 @@ else:
         issues_count = summary_info.get('compliance_issues_count', 0)
         st.metric("⚠️ Problemas de Conformidade", issues_count)
 
-    # Análise de risco (se disponível)
-    if compliance_data and 'risk_assessment' in compliance_data:
+    # Análise de risco (adaptado para nova estrutura)
+    if compliance_data and 'compliance_summary' in compliance_data:
         st.markdown("---")
         st.header("🎯 Análise de Risco")
         
-        risk_data = compliance_data['risk_assessment']
+        compliance_summary = compliance_data['compliance_summary']
         col1, col2, col3 = st.columns(3)
         
         with col1:
-            risk_level = risk_data.get('level', 'N/A')
-            risk_color = get_risk_color(risk_level)
+            # Determinar nível de risco baseado na taxa de conformidade
+            compliance_rate = compliance_summary.get('compliance_rate', 0)
+            total_issues = compliance_summary.get('total_compliance_issues', 0)
+            
+            if total_issues > 20:
+                risk_level = 'CRÍTICO'
+                risk_color = '#F44336'
+            elif total_issues > 10:
+                risk_level = 'ALTO'
+                risk_color = '#FF5722'
+            elif total_issues > 5:
+                risk_level = 'MÉDIO'
+                risk_color = '#FF9800'
+            else:
+                risk_level = 'BAIXO'
+                risk_color = '#4CAF50'
+                
             st.markdown(f"""
             <div style='text-align: center; padding: 1rem; background: {risk_color}; color: white; border-radius: 10px;'>
                 <h3>Nível de Risco</h3>
@@ -303,153 +391,167 @@ else:
             """, unsafe_allow_html=True)
         
         with col2:
-            compliance_rate = risk_data.get('compliance_rate', 0)
-            st.metric("📈 Taxa de Conformidade", f"{compliance_rate:.1f}%")
+            st.metric("📈 Taxa de Conformidade", f"{abs(compliance_rate):.1f}%")
         
         with col3:
-            violations = risk_data.get('total_violations', 0)
+            violations = compliance_summary.get('total_compliance_issues', 0)
             st.metric("🚨 Total de Violações", violations)
 
     # Gráficos de análise diária
-    if 'analise_diaria' in data:
+    if 'timesheet_data' in data:
         st.markdown("---")
         st.header("📈 Análise Diária")
         
-        daily_data = data['analise_diaria']
-        df_daily = pd.DataFrame(daily_data)
+        # Processar dados do timesheet para o formato de análise diária
+        daily_data = process_timesheet_data_for_charts(data['timesheet_data'])
         
-        # Converter datas
-        df_daily['data'] = pd.to_datetime(df_daily['data'])
-        df_daily['data_str'] = df_daily['data'].dt.strftime('%d/%m')
+        if daily_data:
+            df_daily = pd.DataFrame(daily_data)
+            
+            # Converter datas
+            df_daily['data'] = pd.to_datetime(df_daily['data'])
+            df_daily['data_str'] = df_daily['data'].dt.strftime('%d/%m')
+            
+            col1, col2 = st.columns(2)
         
-        col1, col2 = st.columns(2)
-    
-        with col1:
-            # Gráfico de horas trabalhadas por dia
-            fig_hours = px.bar(
-                df_daily, 
-                x='data_str', 
-                y='horas_trabalhadas',
-                title="Horas Trabalhadas por Dia",
-                color='horas_trabalhadas',
-                color_continuous_scale='RdYlGn_r'
-            )
-            fig_hours.add_hline(y=8, line_dash="dash", line_color="red", annotation_text="Limite 8h")
-            fig_hours.add_hline(y=10, line_dash="dash", line_color="orange", annotation_text="Limite 10h")
-            fig_hours.update_layout(
-                xaxis_title="Data",
-                yaxis_title="Horas",
-                showlegend=False
-            )
-            st.plotly_chart(fig_hours, use_container_width=True)
-        
-        with col2:
-            # Gráfico de intervalos de almoço
-            fig_meal = px.bar(
-                df_daily,
-                x='data_str',
-                y='intervalo_almoco',
-                title="Intervalos de Almoço por Dia",
-                color_discrete_sequence=['#2E86AB']
-            )
-            fig_meal.add_hline(y=1, line_dash="dash", line_color="red", annotation_text="Mínimo 1h")
-            fig_meal.update_layout(
-                xaxis_title="Data",
-                yaxis_title="Horas",
-                showlegend=False
-            )
-            st.plotly_chart(fig_meal, use_container_width=True)
+            with col1:
+                # Gráfico de horas trabalhadas por dia
+                fig_hours = px.bar(
+                    df_daily, 
+                    x='data_str', 
+                    y='horas_trabalhadas',
+                    title="Horas Trabalhadas por Dia",
+                    color='horas_trabalhadas',
+                    color_continuous_scale='RdYlGn_r'
+                )
+                fig_hours.add_hline(y=8, line_dash="dash", line_color="red", annotation_text="Limite 8h")
+                fig_hours.add_hline(y=10, line_dash="dash", line_color="orange", annotation_text="Limite 10h")
+                fig_hours.update_layout(
+                    xaxis_title="Data",
+                    yaxis_title="Horas",
+                    showlegend=False
+                )
+                st.plotly_chart(fig_hours, use_container_width=True)
+            
+            with col2:
+                # Gráfico de intervalos de almoço
+                fig_meal = px.bar(
+                    df_daily,
+                    x='data_str',
+                    y='intervalo_almoco',
+                    title="Intervalos de Almoço por Dia",
+                    color_discrete_sequence=['#2E86AB']
+                )
+                fig_meal.add_hline(y=1, line_dash="dash", line_color="red", annotation_text="Mínimo 1h")
+                fig_meal.update_layout(
+                    xaxis_title="Data",
+                    yaxis_title="Horas",
+                    showlegend=False
+                )
+                st.plotly_chart(fig_meal, use_container_width=True)
 
     # KPIs de desempenho
-    if compliance_data and 'kpis' in compliance_data:
+    if compliance_data and 'metricas_qualidade' in compliance_data:
         st.markdown("---")
         st.header("🎯 Indicadores de Desempenho (KPIs)")
         
-        kpis = compliance_data['kpis']
+        kpis = compliance_data['metricas_qualidade']
         col1, col2, col3 = st.columns(3)
         
         with col1:
-            punctuality = kpis.get('punctuality', 0)
+            punctuality = kpis.get('pontualidade', 0)
             st.metric("⏰ Pontualidade", f"{punctuality:.1f}%")
             
         with col2:
-            consistency = kpis.get('consistency', 0)
-            st.metric("📊 Consistência", f"{consistency:.1f}%")
+            consistency = kpis.get('cumprimento_jornada', 0)
+            st.metric("📊 Cumprimento Jornada", f"{consistency:.1f}%")
             
         with col3:
-            overtime_freq = kpis.get('overtime_frequency', 0)
-            st.metric("⏱️ Frequência Horas Extras", f"{overtime_freq:.1f}%")
+            regularity = kpis.get('regularidade_intervalos', 0)
+            st.metric("🍽️ Regularidade Intervalos", f"{regularity:.1f}%")
 
-    # Plano de ação
-    if compliance_data and 'action_plan' in compliance_data:
+    # Plano de ação baseado nos problemas identificados
+    if compliance_data and 'detailed_problems' in compliance_data:
         st.markdown("---")
         st.header("📋 Plano de Ação")
         
-        action_plan = compliance_data['action_plan']
+        detailed_problems = compliance_data['detailed_problems']
         
         # Resumo do plano de ação
-        summary = action_plan.get('summary', {})
+        excessive_hours = len(detailed_problems.get('excessive_daily_hours', []))
+        meal_breaks = len(detailed_problems.get('insufficient_meal_breaks', []))
+        rest_periods = len(detailed_problems.get('insufficient_rest_periods', []))
+        total_issues = excessive_hours + meal_breaks + rest_periods
+        
         col1, col2, col3, col4 = st.columns(4)
         
         with col1:
-            st.metric("🚨 Alertas Críticos", summary.get('critical_alerts', 0))
+            critical_alerts = excessive_hours  # Considerar horas excessivas como críticas
+            st.metric("🚨 Alertas Críticos", critical_alerts)
         with col2:
-            st.metric("⚠️ Alertas Urgentes", summary.get('urgent_alerts', 0))
+            urgent_alerts = rest_periods  # Considerar descanso insuficiente como urgente
+            st.metric("⚠️ Alertas Urgentes", urgent_alerts)
         with col3:
-            st.metric("📊 Total de Alertas", summary.get('total_alerts', 0))
+            st.metric("📊 Total de Alertas", total_issues)
         with col4:
-            st.metric("💡 Recomendações", summary.get('recommendations', 0))
+            recommendations = min(5, total_issues)  # Limitar a 5 recomendações
+            st.metric("💡 Recomendações", recommendations)
         
-        # Ações imediatas
-        immediate_actions = action_plan.get('immediate_actions', [])
-        if immediate_actions:
-            st.subheader("🚨 Ações Imediatas")
-            for action in immediate_actions:
-                level = action.get('level', '')
-                if level == 'CRÍTICO':
-                    alert_class = 'alert-critical'
-                elif level == 'ALTO':
-                    alert_class = 'alert-warning'
-                else:
-                    alert_class = 'alert-success'
-                    
-                st.markdown(f"""
-                <div class="{alert_class}">
-                    <strong>{action.get('title', '')}</strong><br>
-                    {action.get('message', '')}<br>
-                    <em>Ação necessária: {action.get('action_required', '')}</em><br>
-                    <em>Prazo: {action.get('deadline', '')}</em>
-                </div>
-                """, unsafe_allow_html=True)
+        # Ações imediatas para horas excessivas
+        if excessive_hours > 0:
+            st.subheader("🚨 Ações Imediatas - Horas Excessivas")
+            st.markdown(f"""
+            <div class="alert-critical">
+                <strong>Jornadas Excessivas Detectadas</strong><br>
+                {excessive_hours} dias com jornada superior ao limite legal foram identificados.<br>
+                <em>Ação necessária: Revisar escalas e implementar controle de jornada</em><br>
+                <em>Prazo: Imediato</em>
+            </div>
+            """, unsafe_allow_html=True)
         
-        # Ações urgentes
-        urgent_actions = action_plan.get('urgent_actions', [])
-        if urgent_actions:
-            st.subheader("⚠️ Ações Urgentes")
-            for action in urgent_actions:
-                st.markdown(f"""
-                <div class="alert-warning">
-                    <strong>{action.get('title', '')}</strong><br>
-                    {action.get('message', '')}<br>
-                    <em>Ação necessária: {action.get('action_required', '')}</em><br>
-                    <em>Prazo: {action.get('deadline', '')}</em>
-                </div>
-                """, unsafe_allow_html=True)
+        # Ações urgentes para períodos de descanso
+        if rest_periods > 0:
+            st.subheader("⚠️ Ações Urgentes - Períodos de Descanso")
+            st.markdown(f"""
+            <div class="alert-warning">
+                <strong>Descanso Insuficiente Entre Jornadas</strong><br>
+                {rest_periods} ocorrências de descanso inferior a 11 horas entre jornadas.<br>
+                <em>Ação necessária: Ajustar horários para garantir descanso adequado</em><br>
+                <em>Prazo: 48 horas</em>
+            </div>
+            """, unsafe_allow_html=True)
+            
+        # Ações para intervalos de refeição
+        if meal_breaks > 0:
+            st.subheader("📋 Ações Preventivas - Intervalos de Refeição")
+            st.markdown(f"""
+            <div class="alert-warning">
+                <strong>Intervalos de Refeição Irregulares</strong><br>
+                {meal_breaks} ocorrências de intervalos inadequados.<br>
+                <em>Ação necessária: Orientar funcionário sobre obrigatoriedade dos intervalos</em><br>
+                <em>Prazo: 7 dias</em>
+            </div>
+            """, unsafe_allow_html=True)
 
     # Análise de jornada mensal
-    if 'jornada_mensal' in data:
+    if 'period_totals' in data:
         st.markdown("---")
         st.header("📊 Análise de Jornada Mensal")
         
-        jornada = data['jornada_mensal']
+        period_totals = data['period_totals']
         col1, col2 = st.columns(2)
         
         with col1:
             # Métricas de jornada
-            horas_trabalhadas = jornada.get('horas_trabalhadas', 0)
-            horas_contratuais = jornada.get('horas_contratuais', 0)
-            diferenca = jornada.get('diferenca', 0)
-            percentual = jornada.get('percentual_cumprimento', 0)
+            total_hours_str = period_totals.get('total_working_hours', '0:00')
+            total_minutes = period_totals.get('total_working_minutes', 0)
+            horas_trabalhadas = total_minutes / 60
+            
+            # Calcular horas contratuais (assumindo 8h/dia para dias trabalhados)
+            working_days = summary_info.get('work_days', 0)
+            horas_contratuais = working_days * 8
+            diferenca = horas_trabalhadas - horas_contratuais
+            percentual = (horas_trabalhadas / horas_contratuais * 100) if horas_contratuais > 0 else 0
             
             st.metric("⏰ Horas Trabalhadas", f"{horas_trabalhadas:.1f}h")
             st.metric("📋 Horas Contratuais", f"{horas_contratuais:.1f}h")
@@ -467,54 +569,58 @@ else:
             st.plotly_chart(fig_pie, use_container_width=True)
 
     # Tabela detalhada dos dados diários
-    if 'analise_diaria' in data:
+    if 'timesheet_data' in data:
         st.markdown("---")
         st.header("📋 Dados Detalhados por Dia")
         
-        # Recriar df_daily aqui para garantir que está disponível
-        daily_data = data['analise_diaria']
-        df_daily = pd.DataFrame(daily_data)
+        # Processar dados do timesheet para exibição
+        daily_data = process_timesheet_data_for_charts(data['timesheet_data'])
         
-        # Converter datas se necessário
-        if 'data' in df_daily.columns:
-            df_daily['data'] = pd.to_datetime(df_daily['data'], errors='coerce')
-        
-        # Filtros
-        col1, col2 = st.columns(2)
-        with col1:
-            show_only_issues = st.checkbox("Mostrar apenas dias com irregularidades")
-        with col2:
-            min_hours = st.slider("Filtrar por horas mínimas trabalhadas", 0.0, 24.0, 0.0)
-        
-        # Aplicar filtros
-        filtered_df = df_daily.copy()
-        
-        if show_only_issues:
-            filtered_df = filtered_df[filtered_df['observacoes'].str.contains('irregularidade', na=False)]
-        
-        if min_hours > 0:
-            filtered_df = filtered_df[filtered_df['horas_trabalhadas'] >= min_hours]
-        
-        # Formatar colunas para exibição
-        display_df = filtered_df.copy()
-        display_df['data'] = display_df['data'].dt.strftime('%d/%m/%Y')
-        display_df['horas_trabalhadas'] = display_df['horas_trabalhadas'].round(2)
-        display_df['intervalo_almoco'] = display_df['intervalo_almoco'].round(2)
-        
-        # Renomear colunas
-        column_names = {
-            'data': 'Data',
-            'entrada': 'Entrada',
-            'saida_almoco': 'Saída Almoço',
-            'retorno_almoco': 'Retorno Almoço',
-            'saida': 'Saída',
-            'horas_trabalhadas': 'Horas Trabalhadas',
-            'intervalo_almoco': 'Intervalo Almoço',
-            'observacoes': 'Observações'
-        }
-        display_df = display_df.rename(columns=column_names)
-        
-        st.dataframe(display_df, use_container_width=True)
+        if daily_data:
+            df_daily = pd.DataFrame(daily_data)
+            
+            # Converter datas se necessário
+            if 'data' in df_daily.columns:
+                df_daily['data'] = pd.to_datetime(df_daily['data'], errors='coerce')
+            
+            # Filtros
+            col1, col2 = st.columns(2)
+            with col1:
+                show_only_issues = st.checkbox("Mostrar apenas dias com irregularidades")
+            with col2:
+                min_hours = st.slider("Filtrar por horas mínimas trabalhadas", 0.0, 24.0, 0.0)
+            
+            # Aplicar filtros
+            filtered_df = df_daily.copy()
+            
+            if show_only_issues:
+                filtered_df = filtered_df[filtered_df['observacoes'].str.contains('irregularidade|Excesso|feriado', na=False)]
+            
+            if min_hours > 0:
+                filtered_df = filtered_df[filtered_df['horas_trabalhadas'] >= min_hours]
+            
+            # Formatar colunas para exibição
+            display_df = filtered_df.copy()
+            display_df['data'] = display_df['data'].dt.strftime('%d/%m/%Y')
+            display_df['horas_trabalhadas'] = display_df['horas_trabalhadas'].round(2)
+            display_df['intervalo_almoco'] = display_df['intervalo_almoco'].round(2)
+            
+            # Renomear colunas
+            column_names = {
+                'data': 'Data',
+                'entrada': 'Entrada',
+                'saida_almoco': 'Saída Almoço',
+                'retorno_almoco': 'Retorno Almoço',
+                'saida': 'Saída',
+                'horas_trabalhadas': 'Horas Trabalhadas',
+                'intervalo_almoco': 'Intervalo Almoço',
+                'observacoes': 'Observações'
+            }
+            display_df = display_df.rename(columns=column_names)
+            
+            st.dataframe(display_df, use_container_width=True)
+        else:
+            st.warning("Não há dados de timesheet válidos para exibir.")
 
     # Exportar relatório
     st.markdown("---")
