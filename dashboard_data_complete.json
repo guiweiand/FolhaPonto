@@ -1,0 +1,287 @@
+{
+  "metadata": {
+    "export_date": "2025-09-14T19:01:11.318899",
+    "source": "EDA.ipynb - Cronoanálise Completa",
+    "version": "1.0"
+  },
+  "employee": {
+    "name": "ANDRE LUIS DE MORAES DA ROSA",
+    "cpf": "N/A"
+  },
+  "company": {
+    "name": "N/A",
+    "cnpj": "N/A"
+  },
+  "period": {
+    "description": "21/05/2025 à 20/06/2025",
+    "start_date": "01/06/25 dom",
+    "end_date": "31/05/25 sáb"
+  },
+  "summary": {
+    "total_days": 31,
+    "work_days": 25,
+    "rest_days": 5,
+    "holidays": 1,
+    "total_hours_worked": 266.4166666666667,
+    "total_meal_break_hours": 29.066666666666666,
+    "compliance_issues_count": 34
+  },
+  "analise_diaria": [
+    {
+      "data": "21/05/25 qua",
+      "entrada": "06:24",
+      "saida_almoco": "N/A",
+      "retorno_almoco": "N/A",
+      "saida": "01:26",
+      "horas_trabalhadas": 16.983333333333334,
+      "intervalo_almoco": 1.35,
+      "observacoes": "irregularidade"
+    },
+    {
+      "data": "22/05/25 qui",
+      "entrada": "10:35",
+      "saida_almoco": "N/A",
+      "retorno_almoco": "N/A",
+      "saida": "23:42",
+      "horas_trabalhadas": 11.966666666666667,
+      "intervalo_almoco": 1.15,
+      "observacoes": "irregularidade"
+    },
+    {
+      "data": "23/05/25 sex",
+      "entrada": "08:05",
+      "saida_almoco": "N/A",
+      "retorno_almoco": "N/A",
+      "saida": "20:32",
+      "horas_trabalhadas": 10.933333333333334,
+      "intervalo_almoco": 1.1833333333333333,
+      "observacoes": "irregularidade"
+    },
+    {
+      "data": "24/05/25 sáb",
+      "entrada": "08:22",
+      "saida_almoco": "N/A",
+      "retorno_almoco": "N/A",
+      "saida": "18:02",
+      "horas_trabalhadas": 8.55,
+      "intervalo_almoco": 1.1166666666666667,
+      "observacoes": "irregularidade"
+    },
+    {
+      "data": "25/05/25 dom",
+      "entrada": "07:37",
+      "saida_almoco": "N/A",
+      "retorno_almoco": "N/A",
+      "saida": "19:07",
+      "horas_trabalhadas": 10.133333333333333,
+      "intervalo_almoco": 1.3666666666666667,
+      "observacoes": "irregularidade"
+    },
+    {
+      "data": "26/05/25 seg",
+      "entrada": "05:54",
+      "saida_almoco": "N/A",
+      "retorno_almoco": "N/A",
+      "saida": "21:17",
+      "horas_trabalhadas": 14.35,
+      "intervalo_almoco": 1.0333333333333334,
+      "observacoes": "irregularidade"
+    },
+    {
+      "data": "27/05/25 ter",
+      "entrada": "05:07",
+      "saida_almoco": "N/A",
+      "retorno_almoco": "N/A",
+      "saida": "18:20",
+      "horas_trabalhadas": 10.516666666666667,
+      "intervalo_almoco": 1.1833333333333333,
+      "observacoes": "irregularidade"
+    },
+    {
+      "data": "28/05/25 qua",
+      "entrada": "06:11",
+      "saida_almoco": "N/A",
+      "retorno_almoco": "N/A",
+      "saida": "22:06",
+      "horas_trabalhadas": 14.55,
+      "intervalo_almoco": 1.0,
+      "observacoes": "irregularidade"
+    },
+    {
+      "data": "29/05/25 qui",
+      "entrada": "08:37",
+      "saida_almoco": "N/A",
+      "retorno_almoco": "N/A",
+      "saida": "18:11",
+      "horas_trabalhadas": 8.283333333333333,
+      "intervalo_almoco": 1.2833333333333334,
+      "observacoes": "irregularidade"
+    },
+    {
+      "data": "30/05/25 sex",
+      "entrada": "08:03",
+      "saida_almoco": "N/A",
+      "retorno_almoco": "N/A",
+      "saida": "21:26",
+      "horas_trabalhadas": 12.3,
+      "intervalo_almoco": 1.0833333333333333,
+      "observacoes": "irregularidade"
+    },
+    {
+      "data": "31/05/25 sáb",
+      "entrada": "07:51",
+      "saida_almoco": "N/A",
+      "retorno_almoco": "N/A",
+      "saida": "18:37",
+      "horas_trabalhadas": 9.65,
+      "intervalo_almoco": 1.1166666666666667,
+      "observacoes": "irregularidade"
+    },
+    {
+      "data": "01/06/25 dom",
+      "entrada": "07:55",
+      "saida_almoco": "N/A",
+      "retorno_almoco": "N/A",
+      "saida": "18:43",
+      "horas_trabalhadas": 8.883333333333333,
+      "intervalo_almoco": 1.9166666666666667,
+      "observacoes": "irregularidade"
+    },
+    {
+      "data": "02/06/25 seg",
+      "entrada": "05:42",
+      "saida_almoco": "N/A",
+      "retorno_almoco": "N/A",
+      "saida": "20:52",
+      "horas_trabalhadas": 13.85,
+      "intervalo_almoco": 1.0166666666666666,
+      "observacoes": "irregularidade"
+    },
+    {
+      "data": "03/06/25 ter",
+      "entrada": "06:26",
+      "saida_almoco": "N/A",
+      "retorno_almoco": "N/A",
+      "saida": "19:18",
+      "horas_trabalhadas": 11.316666666666666,
+      "intervalo_almoco": 1.55,
+      "observacoes": "irregularidade"
+    },
+    {
+      "data": "04/06/25 qua",
+      "entrada": "08:47",
+      "saida_almoco": "N/A",
+      "retorno_almoco": "N/A",
+      "saida": "18:38",
+      "horas_trabalhadas": 8.8,
+      "intervalo_almoco": 1.05,
+      "observacoes": "irregularidade"
+    },
+    {
+      "data": "05/06/25 qui",
+      "entrada": "08:11",
+      "saida_almoco": "N/A",
+      "retorno_almoco": "N/A",
+      "saida": "19:45",
+      "horas_trabalhadas": 10.166666666666666,
+      "intervalo_almoco": 1.0666666666666667,
+      "observacoes": "irregularidade"
+    },
+    {
+      "data": "06/06/25 sex",
+      "entrada": "10:14",
+      "saida_almoco": "N/A",
+      "retorno_almoco": "N/A",
+      "saida": "11:29",
+      "horas_trabalhadas": 1.25,
+      "intervalo_almoco": 0.0,
+      "observacoes": "irregularidade"
+    },
+    {
+      "data": "09/06/25 seg",
+      "entrada": "09:30",
+      "saida_almoco": "N/A",
+      "retorno_almoco": "N/A",
+      "saida": "00:46",
+      "horas_trabalhadas": 13.366666666666667,
+      "intervalo_almoco": 1.2666666666666666,
+      "observacoes": "irregularidade"
+    },
+    {
+      "data": "10/06/25 ter",
+      "entrada": "08:13",
+      "saida_almoco": "N/A",
+      "retorno_almoco": "N/A",
+      "saida": "19:00",
+      "horas_trabalhadas": 9.233333333333333,
+      "intervalo_almoco": 1.55,
+      "observacoes": "irregularidade"
+    },
+    {
+      "data": "11/06/25 qua",
+      "entrada": "08:13",
+      "saida_almoco": "N/A",
+      "retorno_almoco": "N/A",
+      "saida": "19:00",
+      "horas_trabalhadas": 9.616666666666667,
+      "intervalo_almoco": 1.1666666666666667,
+      "observacoes": "irregularidade"
+    },
+    {
+      "data": "12/06/25 qui",
+      "entrada": "07:44",
+      "saida_almoco": "N/A",
+      "retorno_almoco": "N/A",
+      "saida": "19:00",
+      "horas_trabalhadas": 10.15,
+      "intervalo_almoco": 1.1166666666666667,
+      "observacoes": "irregularidade"
+    },
+    {
+      "data": "13/06/25 sex",
+      "entrada": "08:20",
+      "saida_almoco": "N/A",
+      "retorno_almoco": "N/A",
+      "saida": "21:00",
+      "horas_trabalhadas": 11.666666666666666,
+      "intervalo_almoco": 1.0,
+      "observacoes": "irregularidade"
+    },
+    {
+      "data": "16/06/25 seg",
+      "entrada": "07:36",
+      "saida_almoco": "N/A",
+      "retorno_almoco": "N/A",
+      "saida": "18:00",
+      "horas_trabalhadas": 9.233333333333333,
+      "intervalo_almoco": 1.1666666666666667,
+      "observacoes": "irregularidade"
+    },
+    {
+      "data": "17/06/25 ter",
+      "entrada": "07:30",
+      "saida_almoco": "N/A",
+      "retorno_almoco": "N/A",
+      "saida": "19:00",
+      "horas_trabalhadas": 10.5,
+      "intervalo_almoco": 1.0,
+      "observacoes": "irregularidade"
+    },
+    {
+      "data": "18/06/25 qua",
+      "entrada": "07:00",
+      "saida_almoco": "N/A",
+      "retorno_almoco": "N/A",
+      "saida": "18:30",
+      "horas_trabalhadas": 10.166666666666666,
+      "intervalo_almoco": 1.3333333333333333,
+      "observacoes": "irregularidade"
+    }
+  ],
+  "jornada_mensal": {
+    "horas_trabalhadas": 266.4166666666667,
+    "horas_contratuais": 200,
+    "diferenca": 66.41666666666669,
+    "percentual_cumprimento": 133.20833333333334
+  }
+}

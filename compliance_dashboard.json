@@ -1,0 +1,217 @@
+{
+  "metadata": {
+    "export_date": "2025-09-14T19:01:11.320108",
+    "source": "EDA.ipynb - Análise de Conformidade",
+    "analysis_period": "21/05/2025 à 20/06/2025"
+  },
+  "employee": {
+    "name": "ANDRE LUIS DE MORAES DA ROSA",
+    "cpf": "N/A"
+  },
+  "company": {
+    "name": "N/A",
+    "cnpj": "N/A"
+  },
+  "period": {
+    "description": "21/05/2025 à 20/06/2025",
+    "start_date": "01/06/25 dom",
+    "end_date": "31/05/25 sáb"
+  },
+  "risk_assessment": {
+    "level": "CRÍTICO",
+    "compliance_rate": -36.0,
+    "total_violations": 34,
+    "risk_factors": {
+      "excessive_workdays": 24,
+      "insufficient_meal_breaks": 1,
+      "insufficient_rest_periods": 9
+    }
+  },
+  "kpis": {
+    "punctuality": 95.0,
+    "consistency": 90.0,
+    "overtime_frequency": 96.0
+  },
+  "compliance_details": {
+    "jornada_violations": [
+      {
+        "data": "21/05/25 qua",
+        "details": "Jornada trabalhada 16:59, excesso: 08:59"
+      },
+      {
+        "data": "22/05/25 qui",
+        "details": "Jornada trabalhada 11:58, excesso: 03:58"
+      },
+      {
+        "data": "23/05/25 sex",
+        "details": "Jornada trabalhada 10:56, excesso: 02:56"
+      },
+      {
+        "data": "24/05/25 sáb",
+        "details": "Jornada trabalhada 08:33, excesso: 00:33"
+      },
+      {
+        "data": "25/05/25 dom",
+        "details": "Jornada trabalhada 10:08, excesso: 02:08"
+      },
+      {
+        "data": "26/05/25 seg",
+        "details": "Jornada trabalhada 14:21, excesso: 06:21"
+      },
+      {
+        "data": "27/05/25 ter",
+        "details": "Jornada trabalhada 10:31, excesso: 02:31"
+      },
+      {
+        "data": "28/05/25 qua",
+        "details": "Jornada trabalhada 14:33, excesso: 06:33"
+      },
+      {
+        "data": "29/05/25 qui",
+        "details": "Jornada trabalhada 08:17, excesso: 00:17"
+      },
+      {
+        "data": "30/05/25 sex",
+        "details": "Jornada trabalhada 12:18, excesso: 04:18"
+      },
+      {
+        "data": "31/05/25 sáb",
+        "details": "Jornada trabalhada 09:39, excesso: 01:39"
+      },
+      {
+        "data": "01/06/25 dom",
+        "details": "Jornada trabalhada 08:53, excesso: 00:53"
+      },
+      {
+        "data": "02/06/25 seg",
+        "details": "Jornada trabalhada 13:51, excesso: 05:51"
+      },
+      {
+        "data": "03/06/25 ter",
+        "details": "Jornada trabalhada 11:19, excesso: 03:19"
+      },
+      {
+        "data": "04/06/25 qua",
+        "details": "Jornada trabalhada 08:48, excesso: 00:48"
+      },
+      {
+        "data": "05/06/25 qui",
+        "details": "Jornada trabalhada 10:10, excesso: 02:10"
+      },
+      {
+        "data": "09/06/25 seg",
+        "details": "Jornada trabalhada 13:22, excesso: 05:22"
+      },
+      {
+        "data": "10/06/25 ter",
+        "details": "Jornada trabalhada 09:14, excesso: 01:14"
+      },
+      {
+        "data": "11/06/25 qua",
+        "details": "Jornada trabalhada 09:37, excesso: 01:37"
+      },
+      {
+        "data": "12/06/25 qui",
+        "details": "Jornada trabalhada 10:09, excesso: 02:09"
+      },
+      {
+        "data": "13/06/25 sex",
+        "details": "Jornada trabalhada 11:40, excesso: 03:40"
+      },
+      {
+        "data": "16/06/25 seg",
+        "details": "Jornada trabalhada 09:14, excesso: 01:14"
+      },
+      {
+        "data": "17/06/25 ter",
+        "details": "Jornada trabalhada 10:30, excesso: 02:30"
+      },
+      {
+        "data": "18/06/25 qua",
+        "details": "Jornada trabalhada 10:10, excesso: 02:10"
+      }
+    ],
+    "meal_break_violations": [
+      {
+        "data": "06/06/25 sex",
+        "details": "Intervalo de refeição: Sem registro, necessário: 01:00"
+      }
+    ],
+    "rest_period_violations": [
+      {
+        "data": "21/05/25 qua → 22/05/25 qui",
+        "details": "Período de descanso: 09:09, necessário: 11:00"
+      },
+      {
+        "data": "22/05/25 qui → 23/05/25 sex",
+        "details": "Período de descanso: 08:22, necessário: 11:00"
+      },
+      {
+        "data": "25/05/25 dom → 26/05/25 seg",
+        "details": "Período de descanso: 10:46, necessário: 11:00"
+      },
+      {
+        "data": "26/05/25 seg → 27/05/25 ter",
+        "details": "Período de descanso: 07:49, necessário: 11:00"
+      },
+      {
+        "data": "28/05/25 qua → 29/05/25 qui",
+        "details": "Período de descanso: 10:31, necessário: 11:00"
+      },
+      {
+        "data": "30/05/25 sex → 31/05/25 sáb",
+        "details": "Período de descanso: 10:24, necessário: 11:00"
+      },
+      {
+        "data": "01/06/25 dom → 02/06/25 seg",
+        "details": "Período de descanso: 10:58, necessário: 11:00"
+      },
+      {
+        "data": "02/06/25 seg → 03/06/25 ter",
+        "details": "Período de descanso: 09:33, necessário: 11:00"
+      },
+      {
+        "data": "09/06/25 seg → 10/06/25 ter",
+        "details": "Período de descanso: 07:27, necessário: 11:00"
+      }
+    ]
+  },
+  "action_plan": {
+    "summary": {
+      "critical_alerts": 1,
+      "urgent_alerts": 2,
+      "total_alerts": 3,
+      "recommendations": 3
+    },
+    "immediate_actions": [
+      {
+        "level": "CRÍTICO",
+        "title": "Jornadas Excessivas Detectadas",
+        "message": "Encontradas 24 jornadas superiores a 8 horas diárias",
+        "action_required": "Revisar escala de trabalho e implementar controle de jornada",
+        "deadline": "Imediato"
+      }
+    ],
+    "urgent_actions": [
+      {
+        "level": "ALTO",
+        "title": "Intervalos de Refeição Insuficientes",
+        "message": "Detectados 1 intervalos de refeição abaixo de 1 hora",
+        "action_required": "Garantir intervalos mínimos de 1 hora para refeição",
+        "deadline": "7 dias"
+      },
+      {
+        "level": "ALTO",
+        "title": "Períodos de Descanso Insuficientes",
+        "message": "Encontrados 9 períodos de descanso abaixo de 11 horas",
+        "action_required": "Revisar intervalos entre jornadas de trabalho",
+        "deadline": "7 dias"
+      }
+    ],
+    "recommendations": [
+      "Implementar sistema de controle de ponto eletrônico",
+      "Treinar gestores sobre legislação trabalhista",
+      "Estabelecer política clara de intervalos e jornadas"
+    ]
+  }
+}

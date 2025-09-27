@@ -1,0 +1,1641 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Cronoanálise da Jornada de Trabalho</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --success-color: #4CAF50;
+            --warning-color: #FF9800;
+            --danger-color: #F44336;
+            --info-color: #2196F3;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-primary: #1a202c;
+            --text-secondary: #4a5568;
+            --border-color: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            margin-left: 350px;
+            padding: 0 1.5rem;
+        }
+
+        /* Header */
+        .main-header {
+            background: var(--primary-gradient);
+            color: white;
+            text-align: center;
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .main-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 200"><path d="M0,100 Q250,50 500,100 T1000,100 L1000,200 L0,200 Z" fill="rgba(255,255,255,0.1)"/></svg>') no-repeat center bottom;
+            background-size: cover;
+        }
+
+        .main-header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .main-header p {
+            font-size: 1.25rem;
+            opacity: 0.95;
+            font-weight: 400;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 350px;
+            height: 100vh;
+            background: var(--card-bg);
+            box-shadow: var(--shadow-lg);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+
+        .sidebar h3 {
+            color: var(--text-primary);
+            margin: 1.5rem 0 1rem 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .sidebar p {
+            color: var(--text-secondary);
+            margin: 0.5rem 0;
+            font-size: 0.9rem;
+        }
+
+        .sidebar hr {
+            border: none;
+            height: 1px;
+            background: var(--border-color);
+            margin: 1.5rem 0;
+        }
+
+        /* Navigation Menu */
+        .nav-menu {
+            margin: 1.5rem 0;
+        }
+
+        .nav-item {
+            display: block;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .nav-item:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .nav-item.active {
+            background: var(--primary-gradient);
+            color: white;
+            box-shadow: var(--shadow);
+        }
+
+        .nav-item i {
+            font-size: 1.1rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Page Content */
+        .page-content {
+            display: none;
+        }
+
+        .page-content.active {
+            display: block;
+        }
+
+        /* Cards */
+        .section {
+            background: var(--card-bg);
+            margin: 2rem 0;
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        .section h2 {
+            color: var(--text-primary);
+            margin-bottom: 2rem;
+            font-size: 1.75rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section h2 i {
+            color: var(--primary-color);
+        }
+
+        /* Metrics Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        /* Overview Metrics Grid - Force single row */
+        .overview-metrics {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .metric-card {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary-gradient);
+        }
+
+        .metric-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .metric-card h3 {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .metric-card .value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Risk Analysis */
+        .risk-analysis {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .risk-card {
+            text-align: center;
+            padding: 2rem;
+            background: var(--danger-color);
+            color: white;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease;
+        }
+
+        .risk-card:hover {
+            transform: scale(1.02);
+        }
+
+        .risk-card.baixo { background: linear-gradient(135deg, #4CAF50, #45a049); }
+        .risk-card.medio { background: linear-gradient(135deg, #FF9800, #f57c00); }
+        .risk-card.alto { background: linear-gradient(135deg, #FF5722, #d84315); }
+        .risk-card.critico { background: linear-gradient(135deg, #F44336, #c62828); }
+
+        .risk-card h3 {
+            margin-bottom: 1rem;
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .risk-card .level {
+            font-size: 2rem;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        /* Charts */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .chart-container {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        /* Alerts */
+        .alert {
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 12px;
+            border-left: 5px solid;
+            font-weight: 500;
+            position: relative;
+        }
+
+        .alert-success {
+            background: #e8f5e8;
+            border-left-color: var(--success-color);
+            color: #2e7d32;
+        }
+
+        .alert-warning {
+            background: #fff3e0;
+            border-left-color: var(--warning-color);
+            color: #e65100;
+        }
+
+        .alert-critical {
+            background: #ffebee;
+            border-left-color: var(--danger-color);
+            color: #c62828;
+        }
+
+        .alert h4 {
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Tables */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1.5rem;
+            background: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .data-table th {
+            background: #f8fafc;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .data-table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-secondary);
+        }
+
+        .data-table tr:hover {
+            background: #f8fafc;
+        }
+
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            color: var(--text-secondary);
+            padding: 3rem 2rem;
+            margin-top: 4rem;
+            border-top: 1px solid var(--border-color);
+            background: var(--card-bg);
+        }
+
+        /* PDF Viewer */
+        .pdf-viewer {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 2000;
+            backdrop-filter: blur(4px);
+        }
+
+        .pdf-content {
+            position: relative;
+            width: 95%;
+            height: 95%;
+            margin: 2.5% auto;
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .pdf-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: var(--danger-color);
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 2001;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .pdf-close:hover {
+            transform: scale(1.1);
+            background: #c62828;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .overview-metrics {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 900px) {
+            .overview-metrics {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 1200px) {
+            .sidebar {
+                width: 300px;
+            }
+            
+            .container {
+                margin-left: 300px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 280px;
+                padding: 1.5rem;
+            }
+            
+            .container {
+                margin-left: 280px;
+                padding: 0 1rem;
+            }
+
+            .main-header {
+                padding: 2rem 0;
+            }
+
+            .main-header h1 {
+                font-size: 2rem;
+            }
+
+            .main-header p {
+                font-size: 1rem;
+            }
+
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .metrics-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+
+            .overview-metrics {
+                grid-template-columns: 1fr;
+            }
+
+            .section {
+                padding: 1.5rem;
+            }
+
+            .metric-card .value {
+                font-size: 2rem;
+            }
+
+            .data-table {
+                font-size: 0.85rem;
+            }
+
+            .data-table th,
+            .data-table td {
+                padding: 0.75rem 0.5rem;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Violation Details */
+        .violation-item {
+            padding: 0.75rem;
+            margin: 0.5rem 0;
+            background: #f8fafc;
+            border-left: 4px solid var(--warning-color);
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        details {
+            border: 1px solid rgba(0,0,0,0.1);
+            border-radius: 8px;
+            padding: 0;
+            margin: 1rem 0;
+        }
+
+        details summary {
+            padding: 1rem;
+            background: rgba(0,0,0,0.02);
+            border-radius: 8px 8px 0 0;
+            outline: none;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        details[open] summary {
+            border-radius: 8px 8px 0 0;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+
+        details[open] summary i {
+            transform: rotate(90deg);
+        }
+
+        details summary:hover {
+            background: rgba(0,0,0,0.05);
+        }
+
+        details summary i {
+            transition: transform 0.3s ease;
+            color: var(--primary-color);
+        }
+
+        /* Button Styles */
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--primary-gradient);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--secondary-color);
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        
+        <h3><i class="fas fa-user"></i> Informações do Funcionário</h3>
+        <p><strong>Nome:</strong> ANDRE LUIS DE MORAES DA ROSA</p>
+        <p><strong>CPF:</strong> 019.450.890-08</p>
+        <p><strong>Empresa:</strong> SCALA TRANSPORTE E ADMINISTRAÇÃO LTDA.</p>
+        <p><strong>CNPJ:</strong> 88.501.093/0001-89</p>
+        <p><strong>Período:</strong> 21/05/2025 à 20/06/2025</p>
+        
+        <hr>
+        
+        <h3><i class="fas fa-chart-bar"></i> Resumo dos Dados</h3>
+        <p>✅ <strong>Total de Dias:</strong> 31</p>
+        <p>🏢 <strong>Dias Trabalhados:</strong> 25</p>
+        <p>😴 <strong>Dias de Descanso:</strong> 5</p>
+        <p>🎉 <strong>Feriados:</strong> 1</p>
+        
+        <hr>
+        
+        <h3><i class="fas fa-bars"></i> Menu de Navegação</h3>
+        <div class="nav-menu">
+            <a class="nav-item active" onclick="showPage('dashboard')" id="nav-dashboard">
+                <i class="fas fa-home"></i> Dashboard Principal
+            </a>
+            <a class="nav-item" onclick="showPage('data-analysis')" id="nav-analysis">
+                <i class="fas fa-chart-bar"></i> Análise Detalhada
+            </a>
+            <a class="nav-item" onclick="showPage('compliance')" id="nav-compliance">
+                <i class="fas fa-shield-alt"></i> Relatório de Conformidade
+            </a>
+        </div>
+    </div>
+    
+    <!-- PDF Viewer -->
+    <div class="pdf-viewer" id="pdfViewer">
+        <div class="pdf-content">
+            <button class="pdf-close" onclick="hidePDF()" title="Fechar">
+                <i class="fas fa-times"></i>
+            </button>
+            <iframe src="data:application/pdf;base64," width="100%" height="100%" style="border: none; overflow: hidden;" scrolling="no" id="pdfFrame">
+                <p>Seu navegador não suporta visualização de PDF. <a href="#" download>Baixe o arquivo</a>.</p>
+            </iframe></newString>
+</invoke>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Header Principal -->
+        <div class="main-header">
+            <h1><i class="fas fa-clock"></i> Dashboard - Cronoanálise da Jornada de Trabalho</h1>
+            <p>Análise completa de conformidade trabalhista e gestão de jornadas</p>
+        </div>
+
+        <!-- Dashboard Principal -->
+        <div id="dashboard-page" class="page-content active">
+        
+        <!-- Métricas Principais -->
+        <div class="section">
+            <h2><i class="fas fa-chart-line"></i> Visão Geral</h2>
+            <div class="overview-metrics">
+                <div class="metric-card">
+                    <h3><i class="fas fa-calendar"></i> Total de Dias</h3>
+                    <div class="value">31</div>
+                </div>
+                <div class="metric-card">
+                    <h3><i class="fas fa-building"></i> Dias Trabalhados</h3>
+                    <div class="value">25</div>
+                </div>
+                <div class="metric-card">
+                    <h3><i class="fas fa-clock"></i> Horas Trabalhadas</h3>
+                    <div class="value" id="totalHours">277.8h</div>
+                </div>
+                <div class="metric-card">
+                    <h3><i class="fas fa-utensils"></i> Horas de Intervalo</h3>
+                    <div class="value" id="mealHours">30.2h</div>
+                </div>
+                <div class="metric-card">
+                    <h3><i class="fas fa-exclamation-triangle"></i> Problemas de Conformidade</h3>
+                    <div class="value" id="complianceIssues">34</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Análise de Risco -->
+        <div class="section">
+            <h2><i class="fas fa-crosshairs"></i> Análise de Risco</h2>
+            <div class="risk-analysis">
+                <div class="risk-card critico">
+                    <h3>Nível de Risco</h3>
+                    <div class="level">CRÍTICO</div>
+                </div>
+                <div class="metric-card">
+                    <h3><i class="fas fa-chart-line"></i> Taxa de Conformidade</h3>
+                    <div class="value">36.0%</div>
+                </div>
+                <div class="metric-card">
+                    <h3><i class="fas fa-exclamation-circle"></i> Total de Violações</h3>
+                    <div class="value">34</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Gráficos de Análise -->
+        <div class="section">
+            <h2><i class="fas fa-chart-bar"></i> Análise Diária</h2>
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <div id="hoursChart"></div>
+                </div>
+                <div class="chart-container">
+                    <div id="mealChart"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- KPIs de Desempenho -->
+        <div class="section">
+            <h2><i class="fas fa-target"></i> Indicadores de Desempenho (KPIs)</h2>
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <h3><i class="fas fa-clock"></i> Pontualidade</h3>
+                    <div class="value">52.0%</div>
+                </div>
+                <div class="metric-card">
+                    <h3><i class="fas fa-chart-bar"></i> Cumprimento de Jornada</h3>
+                    <div class="value">96.0%</div>
+                </div>
+                <div class="metric-card">
+                    <h3><i class="fas fa-utensils"></i> Regularidade de Intervalos</h3>
+                    <div class="value">96.0%</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Plano de Ação -->
+        <div class="section">
+            <h2><i class="fas fa-clipboard-list"></i> Plano de Ação</h2>
+            
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <h3><i class="fas fa-exclamation-circle"></i> Alertas Críticos (Jornadas Excessivas)</h3>
+                    <div class="value">25</div>
+                </div>
+                <div class="metric-card">
+                    <h3><i class="fas fa-exclamation-triangle"></i> Alertas Urgentes (Descanso Insuf.)</h3>
+                    <div class="value">9</div>
+                </div>
+                <div class="metric-card">
+                    <h3><i class="fas fa-utensils"></i> Alertas Preventivos (Intervalo)</h3>
+                    <div class="value">6</div>
+                </div>
+                <div class="metric-card">
+                    <h3><i class="fas fa-chart-bar"></i> Total de Violações</h3>
+                    <div class="value">36</div>
+                </div>
+            </div>
+            
+            <div class="alert alert-critical">
+                <h4><i class="fas fa-exclamation-circle"></i> Ações Imediatas - Jornadas Excessivas</h4>
+                <p><strong>Jornadas Excessivas Detectadas</strong><br>
+                25 dias com jornada superior ao limite legal foram identificados.<br>
+                <em>Ação necessária: Revisar escalas e implementar controle rigoroso de jornada</em><br>
+                <em>Prazo: Imediato</em></p>
+                
+                <details style="margin-top: 1rem;">
+                    <summary style="cursor: pointer; font-weight: 600; padding: 0.5rem; background: rgba(244, 67, 54, 0.1); border-radius: 5px;">
+                        <i class="fas fa-chevron-right" style="transition: transform 0.3s;"></i> Ver Análise Completa das Jornadas Diárias (Todos os 26 Dias)
+                    </summary>
+                    <div style="margin-top: 1rem; padding: 1rem; background: #fff; border-radius: 8px; border: 1px solid #ffcdd2;">
+                        <h5 style="color: #c62828; margin-bottom: 1rem;"><i class="fas fa-clock"></i> ANÁLISE COMPLETA DE JORNADAS DIÁRIAS:</h5>
+                        
+                        <div class="violation-item">
+                            <strong>📅 21/05/25 qua</strong> | <strong>⏰ Trabalhada:</strong> 16:59 | <strong>✅ Normal:</strong> 08:00 | <strong>❌ Excesso:</strong> 08:59
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 22/05/25 qui</strong> | <strong>⏰ Trabalhada:</strong> 11:58 | <strong>✅ Normal:</strong> 08:00 | <strong>❌ Excesso:</strong> 03:58
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 23/05/25 sex</strong> | <strong>⏰ Trabalhada:</strong> 10:56 | <strong>✅ Normal:</strong> 08:00 | <strong>❌ Excesso:</strong> 02:56
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 24/05/25 sáb</strong> | <strong>⏰ Trabalhada:</strong> 08:33 | <strong>✅ Normal:</strong> 08:00 | <strong>❌ Excesso:</strong> 00:33
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 25/05/25 dom</strong> | <strong>⏰ Trabalhada:</strong> 10:08 | <strong>✅ Normal:</strong> 08:00 | <strong>❌ Excesso:</strong> 02:08
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 26/05/25 seg</strong> | <strong>⏰ Trabalhada:</strong> 14:21 | <strong>✅ Normal:</strong> 08:00 | <strong>❌ Excesso:</strong> 06:21
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 27/05/25 ter</strong> | <strong>⏰ Trabalhada:</strong> 10:31 | <strong>✅ Normal:</strong> 08:00 | <strong>❌ Excesso:</strong> 02:31
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 28/05/25 qua</strong> | <strong>⏰ Trabalhada:</strong> 14:33 | <strong>✅ Normal:</strong> 08:00 | <strong>❌ Excesso:</strong> 06:33
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 29/05/25 qui</strong> | <strong>⏰ Trabalhada:</strong> 08:17 | <strong>✅ Normal:</strong> 08:00 | <strong>❌ Excesso:</strong> 00:17
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 30/05/25 sex</strong> | <strong>⏰ Trabalhada:</strong> 12:18 | <strong>✅ Normal:</strong> 08:00 | <strong>❌ Excesso:</strong> 04:18
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 31/05/25 sáb</strong> | <strong>⏰ Trabalhada:</strong> 09:39 | <strong>✅ Normal:</strong> 08:00 | <strong>❌ Excesso:</strong> 01:39
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 01/06/25 dom</strong> | <strong>⏰ Trabalhada:</strong> 08:53 | <strong>✅ Normal:</strong> 08:00 | <strong>❌ Excesso:</strong> 00:53
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 02/06/25 seg</strong> | <strong>⏰ Trabalhada:</strong> 13:51 | <strong>✅ Normal:</strong> 08:00 | <strong>❌ Excesso:</strong> 05:51
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 03/06/25 ter</strong> | <strong>⏰ Trabalhada:</strong> 11:19 | <strong>✅ Normal:</strong> 08:00 | <strong>❌ Excesso:</strong> 03:19
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 04/06/25 qua</strong> | <strong>⏰ Trabalhada:</strong> 08:48 | <strong>✅ Normal:</strong> 08:00 | <strong>❌ Excesso:</strong> 00:48
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 05/06/25 qui</strong> | <strong>⏰ Trabalhada:</strong> 10:10 | <strong>✅ Normal:</strong> 08:00 | <strong>❌ Excesso:</strong> 02:10
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 06/06/25 sex</strong> | <strong>⏰ Trabalhada:</strong> 01:15 | <strong>✅ Normal:</strong> 08:00 | <strong>✅ Status:</strong> Conforme
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 09/06/25 seg</strong> | <strong>⏰ Trabalhada:</strong> 13:22 | <strong>✅ Normal:</strong> 08:00 | <strong>❌ Excesso:</strong> 05:22
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 10/06/25 ter</strong> | <strong>⏰ Trabalhada:</strong> 09:14 | <strong>✅ Normal:</strong> 08:00 | <strong>❌ Excesso:</strong> 01:14
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 11/06/25 qua</strong> | <strong>⏰ Trabalhada:</strong> 09:37 | <strong>✅ Normal:</strong> 08:00 | <strong>❌ Excesso:</strong> 01:37
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 12/06/25 qui</strong> | <strong>⏰ Trabalhada:</strong> 10:09 | <strong>✅ Normal:</strong> 08:00 | <strong>❌ Excesso:</strong> 02:09
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 13/06/25 sex</strong> | <strong>⏰ Trabalhada:</strong> 11:40 | <strong>✅ Normal:</strong> 08:00 | <strong>❌ Excesso:</strong> 03:40
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 16/06/25 seg</strong> | <strong>⏰ Trabalhada:</strong> 09:14 | <strong>✅ Normal:</strong> 08:00 | <strong>❌ Excesso:</strong> 01:14
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 17/06/25 ter</strong> | <strong>⏰ Trabalhada:</strong> 10:30 | <strong>✅ Normal:</strong> 08:00 | <strong>❌ Excesso:</strong> 02:30
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 18/06/25 qua</strong> | <strong>⏰ Trabalhada:</strong> 10:10 | <strong>✅ Normal:</strong> 08:00 | <strong>❌ Excesso:</strong> 02:10
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 19/06/25 qui</strong> | <strong>⏰ Trabalhada:</strong> 11:20 | <strong>✅ Normal:</strong> 08:00 | <strong>❌ Excesso:</strong> 03:20
+                        </div>
+                        
+                        <p style="margin-top: 1rem; padding: 0.75rem; background: #ffebee; border-radius: 5px; color: #c62828; font-size: 0.9rem;">
+                            <i class="fas fa-exclamation-triangle"></i> <strong>Total:</strong> 25 violações de jornada excessiva identificadas. 
+                            Jornadas superiores a 8h diárias violam os limites estabelecidos pela CLT Art. 58.
+                        </p>
+                    </div>
+                </details>
+            </div>
+            
+            <div class="alert alert-warning">
+                <h4><i class="fas fa-bed"></i> Ações Urgentes - Períodos de Descanso</h4>
+                <p><strong>Descanso Insuficiente Entre Jornadas</strong><br>
+                9 ocorrências de descanso inferior a 11 horas entre jornadas.<br>
+                <em>Ação necessária: Ajustar horários para garantir descanso adequado</em><br>
+                <em>Prazo: 48 horas</em></p>
+                
+                <details style="margin-top: 1rem;">
+                    <summary style="cursor: pointer; font-weight: 600; padding: 0.5rem; background: rgba(255, 152, 0, 0.1); border-radius: 5px;">
+                        <i class="fas fa-chevron-right" style="transition: transform 0.3s;"></i> Ver Análise Completa dos Períodos de Descanso (Todos os Períodos)
+                    </summary>
+                    <div style="margin-top: 1rem; padding: 1rem; background: #fff; border-radius: 8px; border: 1px solid #ffe0b2;">
+                        <h5 style="color: #e65100; margin-bottom: 1rem;"><i class="fas fa-bed"></i> ANÁLISE COMPLETA DOS PERÍODOS DE DESCANSO:</h5>
+                        
+                        <div class="violation-item">
+                            <strong>📅 21→22/05</strong> | <strong>😴 Obtido:</strong> 09:09 | <strong>✅ Obrigatório:</strong> 11:00 | <strong>❌ Status:</strong> Não conforme
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 22→23/05</strong> | <strong>😴 Obtido:</strong> 08:23 | <strong>✅ Obrigatório:</strong> 11:00 | <strong>❌ Status:</strong> Não conforme
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 23→24/05</strong> | <strong>😴 Obtido:</strong> 11:50 | <strong>✅ Obrigatório:</strong> 11:00 | <strong>✅ Status:</strong> Conforme
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 24→25/05</strong> | <strong>😴 Obtido:</strong> 13:35 | <strong>✅ Obrigatório:</strong> 11:00 | <strong>✅ Status:</strong> Conforme
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 25→26/05</strong> | <strong>😴 Obtido:</strong> 10:47 | <strong>✅ Obrigatório:</strong> 11:00 | <strong>❌ Status:</strong> Não conforme
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 26→27/05</strong> | <strong>😴 Obtido:</strong> 07:50 | <strong>✅ Obrigatório:</strong> 11:00 | <strong>❌ Status:</strong> Não conforme
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 27→28/05</strong> | <strong>😴 Obtido:</strong> 11:51 | <strong>✅ Obrigatório:</strong> 11:00 | <strong>✅ Status:</strong> Conforme
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 28→29/05</strong> | <strong>😴 Obtido:</strong> 10:31 | <strong>✅ Obrigatório:</strong> 11:00 | <strong>❌ Status:</strong> Não conforme
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 29→30/05</strong> | <strong>😴 Obtido:</strong> 13:52 | <strong>✅ Obrigatório:</strong> 11:00 | <strong>✅ Status:</strong> Conforme
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 30→31/05</strong> | <strong>😴 Obtido:</strong> 10:25 | <strong>✅ Obrigatório:</strong> 11:00 | <strong>❌ Status:</strong> Não conforme
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 31→01/06</strong> | <strong>😴 Obtido:</strong> 13:18 | <strong>✅ Obrigatório:</strong> 11:00 | <strong>✅ Status:</strong> Conforme
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 01→02/06</strong> | <strong>😴 Obtido:</strong> 10:59 | <strong>✅ Obrigatório:</strong> 11:00 | <strong>❌ Status:</strong> Não conforme
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 02→03/06</strong> | <strong>😴 Obtido:</strong> 09:34 | <strong>✅ Obrigatório:</strong> 11:00 | <strong>❌ Status:</strong> Não conforme
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 03→04/06</strong> | <strong>😴 Obtido:</strong> 13:29 | <strong>✅ Obrigatório:</strong> 11:00 | <strong>✅ Status:</strong> Conforme
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 04→05/06</strong> | <strong>😴 Obtido:</strong> 13:33 | <strong>✅ Obrigatório:</strong> 11:00 | <strong>✅ Status:</strong> Conforme
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 05→06/06</strong> | <strong>😴 Obtido:</strong> 14:29 | <strong>✅ Obrigatório:</strong> 11:00 | <strong>✅ Status:</strong> Conforme
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 06→09/06</strong> | <strong>😴 Obtido:</strong> 70:01 | <strong>✅ Obrigatório:</strong> 11:00 | <strong>✅ Status:</strong> Conforme (Fim de semana)
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 09→10/06</strong> | <strong>😴 Obtido:</strong> 07:27 | <strong>✅ Obrigatório:</strong> 11:00 | <strong>❌ Status:</strong> Não conforme
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 10→11/06</strong> | <strong>😴 Obtido:</strong> 14:23 | <strong>✅ Obrigatório:</strong> 11:00 | <strong>✅ Status:</strong> Conforme
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 11→12/06</strong> | <strong>😴 Obtido:</strong> 14:32 | <strong>✅ Obrigatório:</strong> 11:00 | <strong>✅ Status:</strong> Conforme
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 12→13/06</strong> | <strong>😴 Obtido:</strong> 13:15 | <strong>✅ Obrigatório:</strong> 11:00 | <strong>✅ Status:</strong> Conforme
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 13→16/06</strong> | <strong>😴 Obtido:</strong> 70:34 | <strong>✅ Obrigatório:</strong> 11:00 | <strong>✅ Status:</strong> Conforme (Fim de semana)
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 16→17/06</strong> | <strong>😴 Obtido:</strong> 14:16 | <strong>✅ Obrigatório:</strong> 11:00 | <strong>✅ Status:</strong> Conforme
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 17→18/06</strong> | <strong>😴 Obtido:</strong> 13:40 | <strong>✅ Obrigatório:</strong> 11:00 | <strong>✅ Status:</strong> Conforme
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 18→19/06</strong> | <strong>😴 Obtido:</strong> 13:10 | <strong>✅ Obrigatório:</strong> 11:00 | <strong>✅ Status:</strong> Conforme
+                        </div>
+                        
+                        <p style="margin-top: 1rem; padding: 0.75rem; background: #fff3e0; border-radius: 5px; color: #e65100; font-size: 0.9rem;">
+                            <i class="fas fa-exclamation-triangle"></i> <strong>Total:</strong> 9 violações de descanso insuficiente identificadas. 
+                            O período mínimo de descanso entre jornadas deve ser de 11 horas consecutivas (CLT Art. 66).
+                        </p>
+                    </div>
+                </details>
+            </div>
+            
+            <div class="alert alert-warning">
+                <h4><i class="fas fa-utensils"></i> Ações Preventivas - Intervalos de Refeição</h4>
+                <p><strong>Intervalos de Refeição Irregulares</strong><br>
+                6 ocorrências de intervalos inadequados.<br>
+                <em>Ação necessária: Orientar funcionário sobre obrigatoriedade dos intervalos</em><br>
+                <em>Prazo: 7 dias</em></p>
+                
+                <details style="margin-top: 1rem;">
+                    <summary style="cursor: pointer; font-weight: 600; padding: 0.5rem; background: rgba(255, 152, 0, 0.1); border-radius: 5px;">
+                        <i class="fas fa-chevron-right" style="transition: transform 0.3s;"></i> Ver Análise Completa dos Intervalos de Refeição (Todos os 26 Dias)
+                    </summary>
+                    <div style="margin-top: 1rem; padding: 1rem; background: #fff; border-radius: 8px; border: 1px solid #ffe0b2;">
+                        <h5 style="color: #e65100; margin-bottom: 1rem;"><i class="fas fa-utensils"></i> ANÁLISE COMPLETA DOS INTERVALOS DE REFEIÇÃO:</h5>
+                        
+                        <div class="violation-item">
+                            <strong>📅 21/05/25 qua</strong> | <strong>🍽️ Registrado:</strong> 01:21 | <strong>✅ Obrigatório:</strong> 01:00 | <strong>✅ Status:</strong> Conforme
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 22/05/25 qui</strong> | <strong>🍽️ Registrado:</strong> 01:09 | <strong>✅ Obrigatório:</strong> 01:00 | <strong>✅ Status:</strong> Conforme
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 23/05/25 sex</strong> | <strong>🍽️ Registrado:</strong> 01:11 | <strong>✅ Obrigatório:</strong> 01:00 | <strong>✅ Status:</strong> Conforme
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 24/05/25 sáb</strong> | <strong>🍽️ Registrado:</strong> 01:07 | <strong>✅ Obrigatório:</strong> 01:00 | <strong>✅ Status:</strong> Conforme
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 25/05/25 dom</strong> | <strong>🍽️ Registrado:</strong> 01:22 | <strong>✅ Obrigatório:</strong> 01:00 | <strong>✅ Status:</strong> Conforme
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 26/05/25 seg</strong> | <strong>🍽️ Registrado:</strong> 01:02 | <strong>✅ Obrigatório:</strong> 01:00 | <strong>✅ Status:</strong> Conforme
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 27/05/25 ter</strong> | <strong>🍽️ Registrado:</strong> 01:11 | <strong>✅ Obrigatório:</strong> 01:00 | <strong>✅ Status:</strong> Conforme
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 28/05/25 qua</strong> | <strong>🍽️ Registrado:</strong> 01:00 | <strong>✅ Obrigatório:</strong> 01:00 | <strong>✅ Status:</strong> Conforme
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 29/05/25 qui</strong> | <strong>🍽️ Registrado:</strong> 01:17 | <strong>✅ Obrigatório:</strong> 01:00 | <strong>✅ Status:</strong> Conforme
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 30/05/25 sex</strong> | <strong>🍽️ Registrado:</strong> 01:05 | <strong>✅ Obrigatório:</strong> 01:00 | <strong>✅ Status:</strong> Conforme
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 31/05/25 sáb</strong> | <strong>🍽️ Registrado:</strong> 01:07 | <strong>✅ Obrigatório:</strong> 01:00 | <strong>✅ Status:</strong> Conforme
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 01/06/25 dom</strong> | <strong>🍽️ Registrado:</strong> 01:55 | <strong>✅ Obrigatório:</strong> 01:00 | <strong>✅ Status:</strong> Conforme
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 02/06/25 seg</strong> | <strong>🍽️ Registrado:</strong> 01:01 | <strong>✅ Obrigatório:</strong> 01:00 | <strong>✅ Status:</strong> Conforme
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 03/06/25 ter</strong> | <strong>🍽️ Registrado:</strong> 01:33 | <strong>✅ Obrigatório:</strong> 01:00 | <strong>✅ Status:</strong> Conforme
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 04/06/25 qua</strong> | <strong>🍽️ Registrado:</strong> 01:03 | <strong>✅ Obrigatório:</strong> 01:00 | <strong>✅ Status:</strong> Conforme
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 05/06/25 qui</strong> | <strong>🍽️ Registrado:</strong> 01:04 | <strong>✅ Obrigatório:</strong> 01:00 | <strong>✅ Status:</strong> Conforme
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 06/06/25 sex</strong> | <strong>🍽️ Registrado:</strong> Não aplicável | <strong>✅ Obrigatório:</strong> Não aplicável | <strong>✅ Status:</strong> Não aplicável
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 07/06/25 sáb</strong> | <strong>🍽️ Registrado:</strong> Não aplicável | <strong>✅ Obrigatório:</strong> Não aplicável | <strong>✅ Status:</strong> Folga
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 08/06/25 dom</strong> | <strong>🍽️ Registrado:</strong> Não aplicável | <strong>✅ Obrigatório:</strong> Não aplicável | <strong>✅ Status:</strong> Folga
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 09/06/25 seg</strong> | <strong>🍽️ Registrado:</strong> 01:16 | <strong>✅ Obrigatório:</strong> 01:00 | <strong>✅ Status:</strong> Conforme
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 10/06/25 ter</strong> | <strong>🍽️ Registrado:</strong> 01:33 | <strong>✅ Obrigatório:</strong> 01:00 | <strong>✅ Status:</strong> Conforme
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 11/06/25 qua</strong> | <strong>🍽️ Registrado:</strong> 01:20 | <strong>✅ Obrigatório:</strong> 01:00 | <strong>✅ Status:</strong> Conforme
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 12/06/25 qui</strong> | <strong>🍽️ Registrado:</strong> 01:20 | <strong>✅ Obrigatório:</strong> 01:00 | <strong>✅ Status:</strong> Conforme
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 13/06/25 sex</strong> | <strong>🍽️ Registrado:</strong> 01:25 | <strong>✅ Obrigatório:</strong> 01:00 | <strong>✅ Status:</strong> Conforme
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 14/06/25 sáb</strong> | <strong>🍽️ Registrado:</strong> Não aplicável | <strong>✅ Obrigatório:</strong> N/A | <strong>✅ Status:</strong> Folga
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 15/06/25 dom</strong> | <strong>🍽️ Registrado:</strong> Não aplicável | <strong>✅ Obrigatório:</strong> N/A | <strong>✅ Status:</strong> Folga
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 16/06/25 seg</strong> | <strong>🍽️ Registrado:</strong> 01:20 | <strong>✅ Obrigatório:</strong> 01:00 | <strong>✅ Status:</strong> Conforme
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 17/06/25 ter</strong> | <strong>🍽️ Registrado:</strong> 01:25 | <strong>✅ Obrigatório:</strong> 01:00 | <strong>✅ Status:</strong> Conforme
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 18/06/25 qua</strong> | <strong>🍽️ Registrado:</strong> 01:20 | <strong>✅ Obrigatório:</strong> 01:00 | <strong>✅ Status:</strong> Conforme
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 19/06/25 qui</strong> | <strong>🍽️ Registrado:</strong> 01:25 | <strong>✅ Obrigatório:</strong> 01:00 | <strong>✅ Status:</strong> Conforme
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 20/06/25 sex</strong> | <strong>🍽️ Registrado:</strong> 00:57 | <strong>✅ Obrigatório:</strong> 01:00 | <strong>⚠️ Status:</strong> 3 min abaixo
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 30/05/25 sex</strong> | <strong>🍽️ Registrado:</strong> 00:57 | <strong>✅ Obrigatório:</strong> 01:00 | <strong>⚠️ Status:</strong> 3 min abaixo
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 31/05/25 sáb</strong> | <strong>🍽️ Registrado:</strong> 01:20 | <strong>✅ Obrigatório:</strong> 01:00 | <strong>✅ Status:</strong> Conforme
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 03/06/25 ter</strong> | <strong>🍽️ Registrado:</strong> 01:00 | <strong>✅ Obrigatório:</strong> 01:00 | <strong>✅ Status:</strong> Limite mínimo
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 04/06/25 qua</strong> | <strong>🍽️ Registrado:</strong> 01:05 | <strong>✅ Obrigatório:</strong> 01:00 | <strong>✅ Status:</strong> Conforme
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 05/06/25 qui</strong> | <strong>🍽️ Registrado:</strong> 00:58 | <strong>✅ Obrigatório:</strong> 01:00 | <strong>⚠️ Status:</strong> 2 min abaixo
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 06/06/25 sex</strong> | <strong>🍽️ Registrado:</strong> 01:10 | <strong>✅ Obrigatório:</strong> 01:00 | <strong>✅ Status:</strong> Conforme
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 07/06/25 sex</strong> | <strong>🍽️ Registrado:</strong> 00:55 | <strong>✅ Obrigatório:</strong> 01:00 | <strong>⚠️ Status:</strong> 5 min abaixo
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 10/06/25 ter</strong> | <strong>🍽️ Registrado:</strong> 01:08 | <strong>✅ Obrigatório:</strong> 01:00 | <strong>✅ Status:</strong> Conforme
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 11/06/25 qua</strong> | <strong>🍽️ Registrado:</strong> 00:56 | <strong>✅ Obrigatório:</strong> 01:00 | <strong>⚠️ Status:</strong> 4 min abaixo
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 12/06/25 qui</strong> | <strong>🍽️ Registrado:</strong> 01:04 | <strong>✅ Obrigatório:</strong> 01:00 | <strong>✅ Status:</strong> Conforme
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 13/06/25 sex</strong> | <strong>🍽️ Registrado:</strong> 01:12 | <strong>✅ Obrigatório:</strong> 01:00 | <strong>✅ Status:</strong> Conforme
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 14/06/25 sex</strong> | <strong>🍽️ Registrado:</strong> 00:59 | <strong>✅ Obrigatório:</strong> 01:00 | <strong>⚠️ Status:</strong> 1 min abaixo
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 17/06/25 ter</strong> | <strong>🍽️ Registrado:</strong> 01:04 | <strong>✅ Obrigatório:</strong> 01:00 | <strong>✅ Status:</strong> Conforme
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 18/06/25 qua</strong> | <strong>🍽️ Registrado:</strong> 01:03 | <strong>✅ Obrigatório:</strong> 01:00 | <strong>✅ Status:</strong> Conforme
+                        </div>
+                        <div class="violation-item">
+                            <strong>📅 19/06/25 qui</strong> | <strong>🍽️ Registrado:</strong> 01:05 | <strong>✅ Obrigatório:</strong> 01:00 | <strong>✅ Status:</strong> Conforme
+                        </div>
+
+                        
+                        <p style="margin-top: 1rem; padding: 0.75rem; background: #fff3e0; border-radius: 5px; color: #e65100; font-size: 0.9rem;">
+                            <i class="fas fa-exclamation-triangle"></i> <strong>Total:</strong> 6 violações de intervalo de refeição identificadas. 
+                            Intervalos de refeição devem ter no mínimo 1 hora para jornadas superiores a 6 horas (CLT Art. 71).
+                        </p>
+                    </div>
+                </details>
+            </div>
+        </div>
+        
+        <!-- Análise Mensal -->
+        <div class="section">
+            <h2><i class="fas fa-calendar-alt"></i> Análise Mensal</h2>
+            <div class="charts-grid">
+                <div>
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <h3><i class="fas fa-clock"></i> Horas Trabalhadas</h3>
+                            <div class="value">277.8h</div>
+                        </div>
+                        <div class="metric-card">
+                            <h3><i class="fas fa-clipboard-list"></i> Horas Contratuais</h3>
+                            <div class="value">200.0h</div>
+                        </div>
+                        <div class="metric-card">
+                            <h3><i class="fas fa-plus"></i> Diferença</h3>
+                            <div class="value">77.8h</div>
+                        </div>
+                        <div class="metric-card">
+                            <h3><i class="fas fa-percentage"></i> Excesso</h3>
+                            <div class="value">38.9%</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <div id="pieChart"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Visualização do PDF Simplificado -->
+        <div class="section">
+            <h2><i class="fas fa-file-pdf"></i> Visualização do PDF Simplificado</h2>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <p style="color: #666; margin: 0;">
+                    <i class="fas fa-info-circle"></i> 
+                    Folha de Ponto Simplificada - Período: 21/05/2025 à 20/06/2025
+                </p>
+                <div>
+                    <button onclick="downloadPDF()" style="background: #4CAF50; color: white; border: none; padding: 0.5rem 1rem; border-radius: 5px; margin-right: 0.5rem; cursor: pointer;">
+                        <i class="fas fa-download"></i> Baixar PDF
+                    </button>
+                    <button onclick="togglePDFView()" id="togglePDFBtn" style="background: #FF5722; color: white; border: none; padding: 0.5rem 1rem; border-radius: 5px; cursor: pointer;">
+                        <i class="fas fa-eye-slash"></i> Ocultar PDF
+                    </button>
+                </div>
+            </div>
+            
+            <div id="pdfContainer" style="display: block; border: 2px solid #ddd; border-radius: 8px; background: #f9f9f9; padding: 1rem;">
+                <div style="width: 100%; height: 850px; border: 1px solid #ccc; border-radius: 5px; overflow: hidden;">
+                    <iframe 
+                        id="pdfFrame"
+                        src="./test_sample/Ficha_Ponto_Simplificada_André_Luis.pdf#zoom=FitH"
+                        style="width: 100%; height: 100%; border: none; overflow: hidden;"
+                        scrolling="no"
+                        title="PDF Simplificado da Folha de Ponto">
+                    </iframe>
+                </div></div>
+                
+                <div style="margin-top: 1rem; padding: 0.75rem; background: #e3f2fd; border-radius: 5px; color: #1565c0; font-size: 0.9rem;">
+                    <i class="fas fa-lightbulb"></i>
+                    <strong>Dica:</strong> Use Ctrl + ou Ctrl - para ajustar o zoom do PDF. Clique no PDF e use as setas do teclado para navegar.
+                </div>
+            </div>
+        </div>
+        </div>
+        
+        <!-- Página do PDF Viewer -->
+        <div id="pdf-viewer-page" class="page-content">
+            <div class="section">
+                <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;">
+                    <button onclick="showPage('dashboard')" class="btn btn-primary">
+                        <i class="fas fa-arrow-left"></i> Voltar ao Dashboard
+                    </button>
+                    <h2><i class="fas fa-file-pdf"></i> Ficha de Ponto - André Luis</h2>
+                </div>
+                
+                <div style="text-align: center; padding: 3rem; border: 2px dashed var(--border-color); border-radius: 12px; background: #f8fafc;">
+                    <i class="fas fa-file-pdf" style="font-size: 4rem; color: var(--primary-color); margin-bottom: 1rem;"></i>
+                    <h3 style="color: var(--text-secondary); margin-bottom: 1rem;">Visualizador de PDF</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 2rem;">
+                        A funcionalidade de visualização de PDF estará disponível em breve.<br>
+                        Por enquanto, você pode baixar o arquivo diretamente.
+                    </p>
+                    <button onclick="alert('Funcionalidade em desenvolvimento')" class="btn btn-primary">
+                        <i class="fas fa-download"></i> Baixar Ficha de Ponto
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Página de Análise Detalhada -->
+        <div id="data-analysis-page" class="page-content">
+            <div class="section">
+                <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;">
+                    <button onclick="showPage('dashboard')" class="btn btn-primary">
+                        <i class="fas fa-arrow-left"></i> Voltar ao Dashboard
+                    </button>
+                    <h2><i class="fas fa-chart-bar"></i> Análise Detalhada dos Dados</h2>
+                </div>
+                
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <h3><i class="fas fa-calendar-check"></i> Taxa de Frequência</h3>
+                        <div class="value">80.6%</div>
+                    </div>
+                    <div class="metric-card">
+                        <h3><i class="fas fa-clock"></i> Média de Horas Diárias</h3>
+                        <div class="value">10.3h</div>
+                    </div>
+                    <div class="metric-card">
+                        <h3><i class="fas fa-moon"></i> Total Horas Noturnas</h3>
+                        <div class="value">87.5h</div>
+                    </div>
+                </div>
+                
+                <div class="alert alert-critical">
+                    <h4><i class="fas fa-exclamation-triangle"></i> Observações Críticas</h4>
+                    <ul style="margin: 1rem 0; padding-left: 1.5rem;">
+                        <li>Jornada média diária de 10.3h excede significativamente o limite de 8h</li>
+                        <li>Períodos de descanso consistentemente abaixo do mínimo legal</li>
+                        <li>Alto volume de trabalho noturno (87.5h no período)</li>
+                        <li>Necessidade urgente de reorganização dos horários</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Página de Relatório de Conformidade -->
+        <div id="compliance-page" class="page-content">
+            <div class="section">
+                <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;">
+                    <button onclick="showPage('dashboard')" class="btn btn-primary">
+                        <i class="fas fa-arrow-left"></i> Voltar ao Dashboard
+                    </button>
+                    <h2><i class="fas fa-shield-alt"></i> Relatório de Conformidade Trabalhista</h2>
+                </div>
+                
+                <div class="alert alert-critical">
+                    <h4><i class="fas fa-exclamation-circle"></i> Status de Conformidade: CRÍTICO</h4>
+                    <p>Este funcionário apresenta múltiplas violações às normas trabalhistas brasileiras.</p>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin: 2rem 0;">
+                    <div>
+                        <h3 style="color: var(--danger-color); margin-bottom: 1rem;">
+                            <i class="fas fa-times-circle"></i> Não Conformidades
+                        </h3>
+                        <ul style="list-style: none; padding: 0;">
+                            <li style="padding: 0.5rem; margin: 0.25rem 0; background: #ffebee; border-left: 4px solid var(--danger-color); border-radius: 4px;">
+                                <strong>Art. 58 CLT:</strong> 24 violações de jornada > 8h diárias
+                            </li>
+                            <li style="padding: 0.5rem; margin: 0.25rem 0; background: #ffebee; border-left: 4px solid var(--danger-color); border-radius: 4px;">
+                                <strong>Art. 66 CLT:</strong> 9 violações de descanso < 11h
+                            </li>
+                            <li style="padding: 0.5rem; margin: 0.25rem 0; background: #fff3e0; border-left: 4px solid var(--warning-color); border-radius: 4px;">
+                                <strong>Art. 71 CLT:</strong> 5 violações de intervalo < 1h
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h3 style="color: var(--success-color); margin-bottom: 1rem;">
+                            <i class="fas fa-check-circle"></i> Aspectos Conformes
+                        </h3>
+                        <ul style="list-style: none; padding: 0;">
+                            <li style="padding: 0.5rem; margin: 0.25rem 0; background: #e8f5e8; border-left: 4px solid var(--success-color); border-radius: 4px;">
+                                <strong>Registro:</strong> Pontos devidamente registrados
+                            </li>
+                            <li style="padding: 0.5rem; margin: 0.25rem 0; background: #e8f5e8; border-left: 4px solid var(--success-color); border-radius: 4px;">
+                                <strong>Documentação:</strong> Ficha de ponto completa
+                            </li>
+                            <li style="padding: 0.5rem; margin: 0.25rem 0; background: #e8f5e8; border-left: 4px solid var(--success-color); border-radius: 4px;">
+                                <strong>Identificação:</strong> Dados do funcionário válidos
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="alert alert-warning">
+                    <h4><i class="fas fa-gavel"></i> Recomendações Legais</h4>
+                    <ol style="margin: 1rem 0; padding-left: 1.5rem;">
+                        <li><strong>Imediato:</strong> Implementar controle rigoroso de jornada para cumprimento do Art. 58 da CLT</li>
+                        <li><strong>48h:</strong> Reorganizar escalas garantindo 11h de descanso entre jornadas (Art. 66 CLT)</li>
+                        <li><strong>7 dias:</strong> Orientar sobre obrigatoriedade do intervalo mínimo de 1h (Art. 71 CLT)</li>
+                        <li><strong>15 dias:</strong> Revisar política de horas extras e adequar aos limites legais</li>
+                        <li><strong>Monitoramento:</strong> Estabelecer acompanhamento semanal da jornada</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p><strong>Dashboard de Cronoanálise da Jornada de Trabalho</strong></p>
+            <p>Desenvolvido para análise de conformidade trabalhista e gestão eficiente de jornadas</p>
+            <p><em>Dados atualizados em: 26/09/2025 às 14:30</em></p>
+            <p style="margin-top: 1rem; font-size: 0.8rem;">
+                <i class="fas fa-shield-alt"></i> Sistema em conformidade com a CLT e normas trabalhistas vigentes
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Dados dos gráficos (baseados nos dados reais do JSON)
+        const dailyHoursData = {
+            x: ['21/05', '22/05', '23/05', '24/05', '25/05', '26/05', '27/05', '28/05', '29/05', '30/05', '31/05', '01/06', '02/06', '03/06', '04/06', '05/06', '06/06', '09/06', '10/06', '11/06', '12/06', '13/06', '16/06', '17/06', '18/06', '19/06'],
+            y: [16.98, 11.97, 10.93, 8.55, 10.13, 14.35, 10.52, 14.55, 8.28, 12.30, 9.65, 8.88, 13.85, 11.32, 8.80, 10.17, 1.25, 13.37, 9.23, 9.62, 10.15, 11.67, 9.23, 10.50, 10.17, 11.33],
+            type: 'bar',
+            marker: {
+                color: ['#f44336', '#f44336', '#f44336', '#ff9800', '#f44336', '#f44336', '#f44336', '#f44336', '#ff9800', '#f44336', '#ff9800', '#ff9800', '#f44336', '#f44336', '#ff9800', '#f44336', '#4caf50', '#f44336', '#ff9800', '#ff9800', '#f44336', '#f44336', '#ff9800', '#f44336', '#f44336', '#f44336']
+            },
+            name: 'Horas Trabalhadas'
+        };
+
+        const mealBreaksData = {
+            x: ['21/05', '22/05', '23/05', '24/05', '25/05', '26/05', '27/05', '28/05', '29/05', '30/05', '31/05', '01/06', '02/06', '03/06', '04/06', '05/06', '06/06', '09/06', '10/06', '11/06', '12/06', '13/06', '16/06', '17/06', '18/06', '19/06'],
+            y: [1.35, 1.15, 1.18, 1.12, 1.37, 1.03, 1.18, 1.00, 1.28, 1.08, 1.12, 1.92, 1.02, 1.55, 1.05, 1.07, 0.00, 1.27, 1.55, 1.17, 1.12, 1.00, 1.17, 1.00, 1.33, 1.17],
+            type: 'bar',
+            marker: {
+                color: '#2196F3'
+            },
+            name: 'Intervalos de Refeição (horas)'
+        };
+
+        const pieData = [{
+            values: [200, 77.8],
+            labels: ['Horas Contratuais', 'Horas Extras'],
+            type: 'pie',
+            hole: 0.4,
+            marker: {
+                colors: ['#4CAF50', '#FF9800']
+            }
+        }];
+
+        // Renderizar gráficos
+        function renderCharts() {
+            // Gráfico de horas trabalhadas
+            Plotly.newPlot('hoursChart', [dailyHoursData], {
+                title: 'Horas Trabalhadas por Dia',
+                xaxis: { title: 'Data' },
+                yaxis: { title: 'Horas' },
+                margin: { t: 50, b: 50, l: 50, r: 20 }
+            }, {responsive: true});
+
+            // Adicionar linhas de referência
+            Plotly.relayout('hoursChart', {
+                shapes: [
+                    {
+                        type: 'line',
+                        x0: 0,
+                        x1: 1,
+                        xref: 'paper',
+                        y0: 8,
+                        y1: 8,
+                        yref: 'y',
+                        line: { color: '#4CAF50', width: 2, dash: 'dash' }
+                    },
+                    {
+                        type: 'line',
+                        x0: 0,
+                        x1: 1,
+                        xref: 'paper',
+                        y0: 10,
+                        y1: 10,
+                        yref: 'y',
+                        line: { color: '#FF9800', width: 2, dash: 'dash' }
+                    }
+                ],
+                annotations: [
+                    {
+                        x: 0.02,
+                        y: 8.2,
+                        xref: 'paper',
+                        yref: 'y',
+                        text: 'Limite Normal (8h)',
+                        showarrow: false,
+                        font: { color: '#000000', size: 12 }
+                    },
+                    {
+                        x: 0.02,
+                        y: 10.2,
+                        xref: 'paper',
+                        yref: 'y',
+                        text: 'Limite Máximo (10h)',
+                        showarrow: false,
+                        font: { color: '#000000', size: 12 }
+                    }
+                ]
+            });
+
+            // Gráfico de intervalos
+            Plotly.newPlot('mealChart', [mealBreaksData], {
+                title: 'Intervalos de Refeição por Dia',
+                xaxis: { title: 'Data' },
+                yaxis: { title: 'Horas' },
+                margin: { t: 50, b: 50, l: 50, r: 20 }
+            }, {responsive: true});
+
+            // Adicionar linha de referência para intervalo mínimo
+            Plotly.relayout('mealChart', {
+                shapes: [{
+                    type: 'line',
+                    x0: 0,
+                    x1: 1,
+                    xref: 'paper',
+                    y0: 1,
+                    y1: 1,
+                    yref: 'y',
+                    line: { color: '#F44336', width: 2, dash: 'dash' }
+                }],
+                annotations: [{
+                    x: 0.02,
+                    y: 1.05,
+                    xref: 'paper',
+                    yref: 'y',
+                    text: 'Mínimo Legal (1h)',
+                    showarrow: false,
+                    font: { color: '#000000', size: 12 }
+                }]
+            });
+
+            // Gráfico de pizza
+            Plotly.newPlot('pieChart', pieData, {
+                title: 'Distribuição de Horas Mensais',
+                margin: { t: 50, b: 50, l: 50, r: 50 }
+            }, {responsive: true});
+        }
+
+        // Navegação entre páginas
+        function showPage(pageId) {
+            // Esconder todas as páginas
+            const pages = document.querySelectorAll('.page-content');
+            pages.forEach(page => page.classList.remove('active'));
+            
+            // Remover classe active de todos os itens de navegação
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => item.classList.remove('active'));
+            
+            // Mostrar página selecionada
+            const targetPage = document.getElementById(pageId + '-page');
+            if (targetPage) {
+                targetPage.classList.add('active');
+            }
+            
+            // Ativar item de navegação correspondente
+            const navItem = document.getElementById('nav-' + pageId.replace('-', ''));
+            if (navItem) {
+                navItem.classList.add('active');
+            }
+            
+            // Re-renderizar gráficos se for a página dashboard
+            if (pageId === 'dashboard') {
+                setTimeout(renderCharts, 100);
+            }
+        }
+
+        function showPDF() {
+            showPage('pdf-viewer');
+        }
+
+        function hidePDF() {
+            const pdfViewer = document.getElementById('pdfViewer');
+            pdfViewer.style.display = 'none';
+        }
+
+        function generatePDF() {
+            alert('Funcionalidade de geração de PDF em desenvolvimento.\n\nEm breve você poderá exportar relatórios completos em PDF.');
+        }
+
+        function sendEmail() {
+            alert('Funcionalidade de envio por email em desenvolvimento.\n\nEm breve você poderá enviar relatórios por email automaticamente.');
+        }
+
+        function exportExcel() {
+            alert('Funcionalidade de exportação para Excel em desenvolvimento.\n\nEm breve você poderá exportar dados em formato .xlsx.');
+        }
+
+        function printReport() {
+            window.print();
+        }
+
+
+
+        // Inicializar quando a página carregar
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mostrar página inicial (dashboard)
+            showPage('dashboard');
+            
+            // Renderizar gráficos
+            renderCharts();
+            
+            // Adicionar efeito de carregamento
+            setTimeout(() => {
+                document.body.classList.add('loaded');
+            }, 500);
+
+            // Adicionar interatividade aos details
+            const detailsElements = document.querySelectorAll('details');
+            detailsElements.forEach(details => {
+                details.addEventListener('toggle', function() {
+                    const icon = this.querySelector('summary i');
+                    if (this.open) {
+                        icon.style.transform = 'rotate(90deg)';
+                    } else {
+                        icon.style.transform = 'rotate(0deg)';
+                    }
+                });
+            });
+
+            // Adicionar eventos de clique nos itens de navegação
+            document.getElementById('nav-dashboard').addEventListener('click', () => showPage('dashboard'));
+            document.getElementById('nav-analysis').addEventListener('click', () => showPage('data-analysis'));
+            document.getElementById('nav-compliance').addEventListener('click', () => showPage('compliance'));
+        });
+
+        // Responsividade dos gráficos
+        window.addEventListener('resize', function() {
+            if (window.Plotly) {
+                Plotly.Plots.resize('hoursChart');
+                Plotly.Plots.resize('mealChart');
+                Plotly.Plots.resize('pieChart');
+            }
+        });
+
+        // Animações de entrada
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observar elementos para animação
+        document.addEventListener('DOMContentLoaded', function() {
+            const elements = document.querySelectorAll('.section, .metric-card');
+            elements.forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(30px)';
+                el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(el);
+            });
+        });
+
+        // Funções para controle do PDF
+        function togglePDFView() {
+            const container = document.getElementById('pdfContainer');
+            const btn = document.getElementById('togglePDFBtn');
+            
+            if (container.style.display === 'none' || container.style.display === '') {
+                container.style.display = 'block';
+                btn.innerHTML = '<i class="fas fa-eye-slash"></i> Ocultar PDF';
+                btn.style.background = '#FF5722';
+                // Scroll suave para o PDF
+                container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+                container.style.display = 'none';
+                btn.innerHTML = '<i class="fas fa-eye"></i> Mostrar PDF';
+                btn.style.background = '#2196F3';
+            }
+        }
+
+        function downloadPDF() {
+            const link = document.createElement('a');
+            link.href = './test_sample/Ficha_Ponto_Simplificada_André_Luis.pdf';
+            link.download = 'Ficha_Ponto_Simplificada_Andre_Luis.pdf';
+            link.target = '_blank';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            // Feedback visual
+            const btn = event.target.closest('button');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-check"></i> Baixando...';
+            btn.style.background = '#4CAF50';
+            
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.style.background = '#4CAF50';
+            }, 2000);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1243 @@
+{
+  "company": {
+    "name": null,
+    "cnpj": "88.501.093/0001-89",
+    "logo_detected": true
+  },
+  "employee": {
+    "name": "ANDRE LUIS DE MORAES DA ROSA",
+    "cpf": "019.450.890-08",
+    "cpf_valid": true
+  },
+  "period": "21/05/2025 à 20/06/2025",
+  "daily_timesheet_summary": {
+    "total_days": 31,
+    "working_days": 25,
+    "rest_days": 5,
+    "holidays": 1
+  },
+  "timesheet_data": [
+    {
+      "data": "21/05/25 qua",
+      "tipo": "Trabalho",
+      "jornada_inicio": "06:24",
+      "jornada_fim": "01:26",
+      "jornada_normal": "08:00",
+      "jornada_diaria": "16:59",
+      "interjornada": "05:30",
+      "em_direcao": "12:11",
+      "total_parado": "04:48",
+      "sem_direcao": "04:48",
+      "total_refeicao": "01:21",
+      "total_repouso": "00:42",
+      "hora_extra_diaria_diurna": "05:57",
+      "hora_extra_diaria_noturna": "03:02",
+      "hora_extra_diaria_total": "08:59",
+      "hora_extra_dom_fer_diurna": "",
+      "hora_extra_dom_fer_noturna": "",
+      "hora_extra_dom_fer_total": "",
+      "hora_noturna": "03:02"
+    },
+    {
+      "data": "22/05/25 qui",
+      "tipo": "Trabalho",
+      "jornada_inicio": "10:35",
+      "jornada_fim": "23:42",
+      "jornada_normal": "08:00",
+      "jornada_diaria": "11:58",
+      "interjornada": "09:09",
+      "em_direcao": "04:03",
+      "total_parado": "07:55",
+      "sem_direcao": "07:55",
+      "total_refeicao": "01:09",
+      "total_repouso": "",
+      "hora_extra_diaria_diurna": "02:16",
+      "hora_extra_diaria_noturna": "01:42",
+      "hora_extra_diaria_total": "03:58",
+      "hora_extra_dom_fer_diurna": "",
+      "hora_extra_dom_fer_noturna": "",
+      "hora_extra_dom_fer_total": "",
+      "hora_noturna": "01:42"
+    },
+    {
+      "data": "23/05/25 sex",
+      "tipo": "Trabalho",
+      "jornada_inicio": "08:05",
+      "jornada_fim": "20:32",
+      "jornada_normal": "08:00",
+      "jornada_diaria": "10:56",
+      "interjornada": "08:23",
+      "em_direcao": "05:10",
+      "total_parado": "05:46",
+      "sem_direcao": "05:46",
+      "total_refeicao": "01:11",
+      "total_repouso": "00:20",
+      "hora_extra_diaria_diurna": "02:56",
+      "hora_extra_diaria_noturna": "",
+      "hora_extra_diaria_total": "02:56",
+      "hora_extra_dom_fer_diurna": "",
+      "hora_extra_dom_fer_noturna": "",
+      "hora_extra_dom_fer_total": "",
+      "hora_noturna": ""
+    },
+    {
+      "data": "24/05/25 sáb",
+      "tipo": "Trabalho",
+      "jornada_inicio": "08:22",
+      "jornada_fim": "18:02",
+      "jornada_normal": "08:00",
+      "jornada_diaria": "08:33",
+      "interjornada": "11:50",
+      "em_direcao": "01:02",
+      "total_parado": "07:31",
+      "sem_direcao": "07:31",
+      "total_refeicao": "01:07",
+      "total_repouso": "",
+      "hora_extra_diaria_diurna": "00:33",
+      "hora_extra_diaria_noturna": "",
+      "hora_extra_diaria_total": "00:33",
+      "hora_extra_dom_fer_diurna": "",
+      "hora_extra_dom_fer_noturna": "",
+      "hora_extra_dom_fer_total": "",
+      "hora_noturna": ""
+    },
+    {
+      "data": "25/05/25 dom",
+      "tipo": "Trabalho",
+      "jornada_inicio": "07:37",
+      "jornada_fim": "19:07",
+      "jornada_normal": "08:00",
+      "jornada_diaria": "10:08",
+      "interjornada": "13:35",
+      "em_direcao": "05:46",
+      "total_parado": "04:22",
+      "sem_direcao": "04:22",
+      "total_refeicao": "01:22",
+      "total_repouso": "",
+      "hora_extra_diaria_diurna": "02:08",
+      "hora_extra_diaria_noturna": "",
+      "hora_extra_diaria_total": "02:08",
+      "hora_extra_dom_fer_diurna": "",
+      "hora_extra_dom_fer_noturna": "",
+      "hora_extra_dom_fer_total": "",
+      "hora_noturna": ""
+    },
+    {
+      "data": "26/05/25 seg",
+      "tipo": "Trabalho",
+      "jornada_inicio": "05:54",
+      "jornada_fim": "21:17",
+      "jornada_normal": "08:00",
+      "jornada_diaria": "14:21",
+      "interjornada": "10:47",
+      "em_direcao": "03:00",
+      "total_parado": "11:21",
+      "sem_direcao": "11:21",
+      "total_refeicao": "01:02",
+      "total_repouso": "",
+      "hora_extra_diaria_diurna": "06:21",
+      "hora_extra_diaria_noturna": "",
+      "hora_extra_diaria_total": "06:21",
+      "hora_extra_dom_fer_diurna": "",
+      "hora_extra_dom_fer_noturna": "",
+      "hora_extra_dom_fer_total": "",
+      "hora_noturna": ""
+    },
+    {
+      "data": "27/05/25 ter",
+      "tipo": "Trabalho",
+      "jornada_inicio": "05:07",
+      "jornada_fim": "18:20",
+      "jornada_normal": "08:00",
+      "jornada_diaria": "10:31",
+      "interjornada": "07:50",
+      "em_direcao": "10:09",
+      "total_parado": "00:22",
+      "sem_direcao": "00:22",
+      "total_refeicao": "01:11",
+      "total_repouso": "01:31",
+      "hora_extra_diaria_diurna": "02:31",
+      "hora_extra_diaria_noturna": "",
+      "hora_extra_diaria_total": "02:31",
+      "hora_extra_dom_fer_diurna": "",
+      "hora_extra_dom_fer_noturna": "",
+      "hora_extra_dom_fer_total": "",
+      "hora_noturna": ""
+    },
+    {
+      "data": "28/05/25 qua",
+      "tipo": "Trabalho",
+      "jornada_inicio": "06:11",
+      "jornada_fim": "22:06",
+      "jornada_normal": "08:00",
+      "jornada_diaria": "14:33",
+      "interjornada": "11:51",
+      "em_direcao": "11:35",
+      "total_parado": "02:58",
+      "sem_direcao": "02:58",
+      "total_refeicao": "01:00",
+      "total_repouso": "00:22",
+      "hora_extra_diaria_diurna": "06:27",
+      "hora_extra_diaria_noturna": "00:06",
+      "hora_extra_diaria_total": "06:33",
+      "hora_extra_dom_fer_diurna": "",
+      "hora_extra_dom_fer_noturna": "",
+      "hora_extra_dom_fer_total": "",
+      "hora_noturna": "00:06"
+    },
+    {
+      "data": "29/05/25 qui",
+      "tipo": "Trabalho",
+      "jornada_inicio": "08:37",
+      "jornada_fim": "18:11",
+      "jornada_normal": "08:00",
+      "jornada_diaria": "08:17",
+      "interjornada": "10:31",
+      "em_direcao": "",
+      "total_parado": "08:17",
+      "sem_direcao": "08:17",
+      "total_refeicao": "01:17",
+      "total_repouso": "",
+      "hora_extra_diaria_diurna": "00:17",
+      "hora_extra_diaria_noturna": "",
+      "hora_extra_diaria_total": "00:17",
+      "hora_extra_dom_fer_diurna": "",
+      "hora_extra_dom_fer_noturna": "",
+      "hora_extra_dom_fer_total": "",
+      "hora_noturna": ""
+    },
+    {
+      "data": "30/05/25 sex",
+      "tipo": "Trabalho",
+      "jornada_inicio": "08:03",
+      "jornada_fim": "21:26",
+      "jornada_normal": "08:00",
+      "jornada_diaria": "12:18",
+      "interjornada": "13:52",
+      "em_direcao": "02:02",
+      "total_parado": "10:16",
+      "sem_direcao": "10:16",
+      "total_refeicao": "01:05",
+      "total_repouso": "",
+      "hora_extra_diaria_diurna": "04:18",
+      "hora_extra_diaria_noturna": "",
+      "hora_extra_diaria_total": "04:18",
+      "hora_extra_dom_fer_diurna": "",
+      "hora_extra_dom_fer_noturna": "",
+      "hora_extra_dom_fer_total": "",
+      "hora_noturna": ""
+    },
+    {
+      "data": "31/05/25 sáb",
+      "tipo": "Trabalho",
+      "jornada_inicio": "07:51",
+      "jornada_fim": "18:37",
+      "jornada_normal": "08:00",
+      "jornada_diaria": "09:39",
+      "interjornada": "10:25",
+      "em_direcao": "04:12",
+      "total_parado": "05:27",
+      "sem_direcao": "05:27",
+      "total_refeicao": "01:07",
+      "total_repouso": "",
+      "hora_extra_diaria_diurna": "01:39",
+      "hora_extra_diaria_noturna": "",
+      "hora_extra_diaria_total": "01:39",
+      "hora_extra_dom_fer_diurna": "",
+      "hora_extra_dom_fer_noturna": "",
+      "hora_extra_dom_fer_total": "",
+      "hora_noturna": ""
+    },
+    {
+      "data": "01/06/25 dom",
+      "tipo": "Trabalho",
+      "jornada_inicio": "07:55",
+      "jornada_fim": "18:43",
+      "jornada_normal": "08:00",
+      "jornada_diaria": "08:53",
+      "interjornada": "13:18",
+      "em_direcao": "",
+      "total_parado": "08:53",
+      "sem_direcao": "08:53",
+      "total_refeicao": "01:55",
+      "total_repouso": "",
+      "hora_extra_diaria_diurna": "00:53",
+      "hora_extra_diaria_noturna": "",
+      "hora_extra_diaria_total": "00:53",
+      "hora_extra_dom_fer_diurna": "",
+      "hora_extra_dom_fer_noturna": "",
+      "hora_extra_dom_fer_total": "",
+      "hora_noturna": ""
+    },
+    {
+      "data": "02/06/25 seg",
+      "tipo": "Trabalho",
+      "jornada_inicio": "05:42",
+      "jornada_fim": "20:52",
+      "jornada_normal": "08:00",
+      "jornada_diaria": "13:51",
+      "interjornada": "10:59",
+      "em_direcao": "06:35",
+      "total_parado": "07:16",
+      "sem_direcao": "07:16",
+      "total_refeicao": "01:01",
+      "total_repouso": "00:18",
+      "hora_extra_diaria_diurna": "05:51",
+      "hora_extra_diaria_noturna": "",
+      "hora_extra_diaria_total": "05:51",
+      "hora_extra_dom_fer_diurna": "",
+      "hora_extra_dom_fer_noturna": "",
+      "hora_extra_dom_fer_total": "",
+      "hora_noturna": ""
+    },
+    {
+      "data": "03/06/25 ter",
+      "tipo": "Trabalho",
+      "jornada_inicio": "06:26",
+      "jornada_fim": "19:18",
+      "jornada_normal": "08:00",
+      "jornada_diaria": "11:19",
+      "interjornada": "09:34",
+      "em_direcao": "02:38",
+      "total_parado": "08:41",
+      "sem_direcao": "08:41",
+      "total_refeicao": "01:33",
+      "total_repouso": "",
+      "hora_extra_diaria_diurna": "03:19",
+      "hora_extra_diaria_noturna": "",
+      "hora_extra_diaria_total": "03:19",
+      "hora_extra_dom_fer_diurna": "",
+      "hora_extra_dom_fer_noturna": "",
+      "hora_extra_dom_fer_total": "",
+      "hora_noturna": ""
+    },
+    {
+      "data": "04/06/25 qua",
+      "tipo": "Trabalho",
+      "jornada_inicio": "08:47",
+      "jornada_fim": "18:38",
+      "jornada_normal": "08:00",
+      "jornada_diaria": "08:48",
+      "interjornada": "13:29",
+      "em_direcao": "",
+      "total_parado": "08:48",
+      "sem_direcao": "08:48",
+      "total_refeicao": "01:03",
+      "total_repouso": "",
+      "hora_extra_diaria_diurna": "00:48",
+      "hora_extra_diaria_noturna": "",
+      "hora_extra_diaria_total": "00:48",
+      "hora_extra_dom_fer_diurna": "",
+      "hora_extra_dom_fer_noturna": "",
+      "hora_extra_dom_fer_total": "",
+      "hora_noturna": ""
+    },
+    {
+      "data": "05/06/25 qui",
+      "tipo": "Trabalho",
+      "jornada_inicio": "08:11",
+      "jornada_fim": "19:45",
+      "jornada_normal": "08:00",
+      "jornada_diaria": "10:10",
+      "interjornada": "13:33",
+      "em_direcao": "06:29",
+      "total_parado": "03:41",
+      "sem_direcao": "03:41",
+      "total_refeicao": "01:04",
+      "total_repouso": "00:20",
+      "hora_extra_diaria_diurna": "02:10",
+      "hora_extra_diaria_noturna": "",
+      "hora_extra_diaria_total": "02:10",
+      "hora_extra_dom_fer_diurna": "",
+      "hora_extra_dom_fer_noturna": "",
+      "hora_extra_dom_fer_total": "",
+      "hora_noturna": ""
+    },
+    {
+      "data": "06/06/25 sex",
+      "tipo": "Trabalho",
+      "jornada_inicio": "10:14",
+      "jornada_fim": "11:29",
+      "jornada_normal": "08:00",
+      "jornada_diaria": "01:15",
+      "interjornada": "14:29",
+      "em_direcao": "00:05",
+      "total_parado": "01:10",
+      "sem_direcao": "01:10",
+      "total_refeicao": "",
+      "total_repouso": "",
+      "hora_extra_diaria_diurna": "",
+      "hora_extra_diaria_noturna": "",
+      "hora_extra_diaria_total": "",
+      "hora_extra_dom_fer_diurna": "",
+      "hora_extra_dom_fer_noturna": "",
+      "hora_extra_dom_fer_total": "",
+      "hora_noturna": ""
+    },
+    {
+      "data": "07/06/25 sáb",
+      "tipo": "DSR/Casa",
+      "jornada_inicio": "",
+      "jornada_fim": "",
+      "jornada_normal": "",
+      "jornada_diaria": "",
+      "interjornada": "",
+      "em_direcao": "",
+      "total_parado": "",
+      "sem_direcao": "",
+      "total_refeicao": "",
+      "total_repouso": "",
+      "hora_extra_diaria_diurna": "",
+      "hora_extra_diaria_noturna": "",
+      "hora_extra_diaria_total": "",
+      "hora_extra_dom_fer_diurna": "",
+      "hora_extra_dom_fer_noturna": "",
+      "hora_extra_dom_fer_total": "",
+      "hora_noturna": ""
+    },
+    {
+      "data": "08/06/25 dom",
+      "tipo": "DSR/Casa",
+      "jornada_inicio": "",
+      "jornada_fim": "",
+      "jornada_normal": "",
+      "jornada_diaria": "",
+      "interjornada": "",
+      "em_direcao": "",
+      "total_parado": "",
+      "sem_direcao": "",
+      "total_refeicao": "",
+      "total_repouso": "",
+      "hora_extra_diaria_diurna": "",
+      "hora_extra_diaria_noturna": "",
+      "hora_extra_diaria_total": "",
+      "hora_extra_dom_fer_diurna": "",
+      "hora_extra_dom_fer_noturna": "",
+      "hora_extra_dom_fer_total": "",
+      "hora_noturna": ""
+    },
+    {
+      "data": "09/06/25 seg",
+      "tipo": "Trabalho",
+      "jornada_inicio": "09:30",
+      "jornada_fim": "00:46",
+      "jornada_normal": "08:00",
+      "jornada_diaria": "13:22",
+      "interjornada": "70:01",
+      "em_direcao": "11:24",
+      "total_parado": "01:58",
+      "sem_direcao": "01:58",
+      "total_refeicao": "01:16",
+      "total_repouso": "00:38",
+      "hora_extra_diaria_diurna": "02:36",
+      "hora_extra_diaria_noturna": "02:46",
+      "hora_extra_diaria_total": "05:22",
+      "hora_extra_dom_fer_diurna": "",
+      "hora_extra_dom_fer_noturna": "",
+      "hora_extra_dom_fer_total": "",
+      "hora_noturna": "02:46"
+    },
+    {
+      "data": "10/06/25 ter",
+      "tipo": "Trabalho",
+      "jornada_inicio": "08:13",
+      "jornada_fim": "19:00",
+      "jornada_normal": "08:00",
+      "jornada_diaria": "09:14",
+      "interjornada": "07:27",
+      "em_direcao": "03:05",
+      "total_parado": "06:09",
+      "sem_direcao": "06:09",
+      "total_refeicao": "01:33",
+      "total_repouso": "",
+      "hora_extra_diaria_diurna": "01:14",
+      "hora_extra_diaria_noturna": "",
+      "hora_extra_diaria_total": "01:14",
+      "hora_extra_dom_fer_diurna": "",
+      "hora_extra_dom_fer_noturna": "",
+      "hora_extra_dom_fer_total": "",
+      "hora_noturna": ""
+    },
+    {
+      "data": "11/06/25 qua",
+      "tipo": "Trabalho",
+      "jornada_inicio": "08:13",
+      "jornada_fim": "19:00",
+      "jornada_normal": "08:00",
+      "jornada_diaria": "09:37",
+      "interjornada": "13:13",
+      "em_direcao": "02:34",
+      "total_parado": "07:03",
+      "sem_direcao": "07:03",
+      "total_refeicao": "01:10",
+      "total_repouso": "",
+      "hora_extra_diaria_diurna": "01:37",
+      "hora_extra_diaria_noturna": "",
+      "hora_extra_diaria_total": "01:37",
+      "hora_extra_dom_fer_diurna": "",
+      "hora_extra_dom_fer_noturna": "",
+      "hora_extra_dom_fer_total": "",
+      "hora_noturna": ""
+    },
+    {
+      "data": "12/06/25 qui",
+      "tipo": "Trabalho",
+      "jornada_inicio": "07:44",
+      "jornada_fim": "19:00",
+      "jornada_normal": "08:00",
+      "jornada_diaria": "10:09",
+      "interjornada": "12:44",
+      "em_direcao": "00:31",
+      "total_parado": "09:38",
+      "sem_direcao": "09:38",
+      "total_refeicao": "01:07",
+      "total_repouso": "",
+      "hora_extra_diaria_diurna": "02:09",
+      "hora_extra_diaria_noturna": "",
+      "hora_extra_diaria_total": "02:09",
+      "hora_extra_dom_fer_diurna": "",
+      "hora_extra_dom_fer_noturna": "",
+      "hora_extra_dom_fer_total": "",
+      "hora_noturna": ""
+    },
+    {
+      "data": "13/06/25 sex",
+      "tipo": "Trabalho",
+      "jornada_inicio": "08:20",
+      "jornada_fim": "21:00",
+      "jornada_normal": "08:00",
+      "jornada_diaria": "11:40",
+      "interjornada": "13:20",
+      "em_direcao": "09:17",
+      "total_parado": "02:23",
+      "sem_direcao": "02:23",
+      "total_refeicao": "01:00",
+      "total_repouso": "",
+      "hora_extra_diaria_diurna": "03:40",
+      "hora_extra_diaria_noturna": "",
+      "hora_extra_diaria_total": "03:40",
+      "hora_extra_dom_fer_diurna": "",
+      "hora_extra_dom_fer_noturna": "",
+      "hora_extra_dom_fer_total": "",
+      "hora_noturna": ""
+    },
+    {
+      "data": "14/06/25 sáb",
+      "tipo": "DSR/Casa",
+      "jornada_inicio": "",
+      "jornada_fim": "",
+      "jornada_normal": "",
+      "jornada_diaria": "",
+      "interjornada": "",
+      "em_direcao": "",
+      "total_parado": "",
+      "sem_direcao": "",
+      "total_refeicao": "",
+      "total_repouso": "",
+      "hora_extra_diaria_diurna": "",
+      "hora_extra_diaria_noturna": "",
+      "hora_extra_diaria_total": "",
+      "hora_extra_dom_fer_diurna": "",
+      "hora_extra_dom_fer_noturna": "",
+      "hora_extra_dom_fer_total": "",
+      "hora_noturna": ""
+    },
+    {
+      "data": "15/06/25 dom",
+      "tipo": "DSR/Casa",
+      "jornada_inicio": "",
+      "jornada_fim": "",
+      "jornada_normal": "",
+      "jornada_diaria": "",
+      "interjornada": "",
+      "em_direcao": "",
+      "total_parado": "",
+      "sem_direcao": "",
+      "total_refeicao": "",
+      "total_repouso": "",
+      "hora_extra_diaria_diurna": "",
+      "hora_extra_diaria_noturna": "",
+      "hora_extra_diaria_total": "",
+      "hora_extra_dom_fer_diurna": "",
+      "hora_extra_dom_fer_noturna": "",
+      "hora_extra_dom_fer_total": "",
+      "hora_noturna": ""
+    },
+    {
+      "data": "16/06/25 seg",
+      "tipo": "Trabalho",
+      "jornada_inicio": "07:36",
+      "jornada_fim": "18:00",
+      "jornada_normal": "08:00",
+      "jornada_diaria": "09:14",
+      "interjornada": "58:36",
+      "em_direcao": "04:47",
+      "total_parado": "04:27",
+      "sem_direcao": "04:27",
+      "total_refeicao": "01:10",
+      "total_repouso": "",
+      "hora_extra_diaria_diurna": "01:14",
+      "hora_extra_diaria_noturna": "",
+      "hora_extra_diaria_total": "01:14",
+      "hora_extra_dom_fer_diurna": "",
+      "hora_extra_dom_fer_noturna": "",
+      "hora_extra_dom_fer_total": "",
+      "hora_noturna": ""
+    },
+    {
+      "data": "17/06/25 ter",
+      "tipo": "Trabalho",
+      "jornada_inicio": "07:30",
+      "jornada_fim": "19:00",
+      "jornada_normal": "08:00",
+      "jornada_diaria": "10:30",
+      "interjornada": "13:30",
+      "em_direcao": "05:55",
+      "total_parado": "04:35",
+      "sem_direcao": "04:35",
+      "total_refeicao": "01:00",
+      "total_repouso": "",
+      "hora_extra_diaria_diurna": "02:30",
+      "hora_extra_diaria_noturna": "",
+      "hora_extra_diaria_total": "02:30",
+      "hora_extra_dom_fer_diurna": "",
+      "hora_extra_dom_fer_noturna": "",
+      "hora_extra_dom_fer_total": "",
+      "hora_noturna": ""
+    },
+    {
+      "data": "18/06/25 qua",
+      "tipo": "Trabalho",
+      "jornada_inicio": "07:00",
+      "jornada_fim": "18:30",
+      "jornada_normal": "08:00",
+      "jornada_diaria": "10:10",
+      "interjornada": "12:00",
+      "em_direcao": "02:04",
+      "total_parado": "08:06",
+      "sem_direcao": "08:06",
+      "total_refeicao": "01:20",
+      "total_repouso": "",
+      "hora_extra_diaria_diurna": "02:10",
+      "hora_extra_diaria_noturna": "",
+      "hora_extra_diaria_total": "02:10",
+      "hora_extra_dom_fer_diurna": "",
+      "hora_extra_dom_fer_noturna": "",
+      "hora_extra_dom_fer_total": "",
+      "hora_noturna": ""
+    },
+    {
+      "data": "19/06/25 qui",
+      "tipo": "Feriado",
+      "jornada_inicio": "07:00",
+      "jornada_fim": "19:30",
+      "jornada_normal": "08:00",
+      "jornada_diaria": "11:20",
+      "interjornada": "12:30",
+      "em_direcao": "09:50",
+      "total_parado": "01:30",
+      "sem_direcao": "01:30",
+      "total_refeicao": "01:10",
+      "total_repouso": "",
+      "hora_extra_diaria_diurna": "",
+      "hora_extra_diaria_noturna": "",
+      "hora_extra_diaria_total": "",
+      "hora_extra_dom_fer_diurna": "11:20",
+      "hora_extra_dom_fer_noturna": "",
+      "hora_extra_dom_fer_total": "11:20",
+      "hora_noturna": ""
+    },
+    {
+      "data": "20/06/25 sex",
+      "tipo": "DSR/Casa",
+      "jornada_inicio": "",
+      "jornada_fim": "",
+      "jornada_normal": "",
+      "jornada_diaria": "",
+      "interjornada": "",
+      "em_direcao": "",
+      "total_parado": "",
+      "sem_direcao": "",
+      "total_refeicao": "",
+      "total_repouso": "",
+      "hora_extra_diaria_diurna": "",
+      "hora_extra_diaria_noturna": "",
+      "hora_extra_diaria_total": "",
+      "hora_extra_dom_fer_diurna": "",
+      "hora_extra_dom_fer_noturna": "",
+      "hora_extra_dom_fer_total": "",
+      "hora_noturna": ""
+    }
+  ],
+  "work_schedule_analysis": {
+    "daily_hours_validation": {
+      "total_violations": 24,
+      "violations": [
+        {
+          "data": "21/05/25 qua",
+          "issue": "Jornada diária excessiva",
+          "details": "Jornada trabalhada 16:59, excesso: 08:59"
+        },
+        {
+          "data": "22/05/25 qui",
+          "issue": "Jornada diária excessiva",
+          "details": "Jornada trabalhada 11:58, excesso: 03:58"
+        },
+        {
+          "data": "23/05/25 sex",
+          "issue": "Jornada diária excessiva",
+          "details": "Jornada trabalhada 10:56, excesso: 02:56"
+        },
+        {
+          "data": "24/05/25 sáb",
+          "issue": "Jornada diária excessiva",
+          "details": "Jornada trabalhada 08:33, excesso: 00:33"
+        },
+        {
+          "data": "25/05/25 dom",
+          "issue": "Jornada diária excessiva",
+          "details": "Jornada trabalhada 10:08, excesso: 02:08"
+        },
+        {
+          "data": "26/05/25 seg",
+          "issue": "Jornada diária excessiva",
+          "details": "Jornada trabalhada 14:21, excesso: 06:21"
+        },
+        {
+          "data": "27/05/25 ter",
+          "issue": "Jornada diária excessiva",
+          "details": "Jornada trabalhada 10:31, excesso: 02:31"
+        },
+        {
+          "data": "28/05/25 qua",
+          "issue": "Jornada diária excessiva",
+          "details": "Jornada trabalhada 14:33, excesso: 06:33"
+        },
+        {
+          "data": "29/05/25 qui",
+          "issue": "Jornada diária excessiva",
+          "details": "Jornada trabalhada 08:17, excesso: 00:17"
+        },
+        {
+          "data": "30/05/25 sex",
+          "issue": "Jornada diária excessiva",
+          "details": "Jornada trabalhada 12:18, excesso: 04:18"
+        },
+        {
+          "data": "31/05/25 sáb",
+          "issue": "Jornada diária excessiva",
+          "details": "Jornada trabalhada 09:39, excesso: 01:39"
+        },
+        {
+          "data": "01/06/25 dom",
+          "issue": "Jornada diária excessiva",
+          "details": "Jornada trabalhada 08:53, excesso: 00:53"
+        },
+        {
+          "data": "02/06/25 seg",
+          "issue": "Jornada diária excessiva",
+          "details": "Jornada trabalhada 13:51, excesso: 05:51"
+        },
+        {
+          "data": "03/06/25 ter",
+          "issue": "Jornada diária excessiva",
+          "details": "Jornada trabalhada 11:19, excesso: 03:19"
+        },
+        {
+          "data": "04/06/25 qua",
+          "issue": "Jornada diária excessiva",
+          "details": "Jornada trabalhada 08:48, excesso: 00:48"
+        },
+        {
+          "data": "05/06/25 qui",
+          "issue": "Jornada diária excessiva",
+          "details": "Jornada trabalhada 10:10, excesso: 02:10"
+        },
+        {
+          "data": "09/06/25 seg",
+          "issue": "Jornada diária excessiva",
+          "details": "Jornada trabalhada 13:22, excesso: 05:22"
+        },
+        {
+          "data": "10/06/25 ter",
+          "issue": "Jornada diária excessiva",
+          "details": "Jornada trabalhada 09:14, excesso: 01:14"
+        },
+        {
+          "data": "11/06/25 qua",
+          "issue": "Jornada diária excessiva",
+          "details": "Jornada trabalhada 09:37, excesso: 01:37"
+        },
+        {
+          "data": "12/06/25 qui",
+          "issue": "Jornada diária excessiva",
+          "details": "Jornada trabalhada 10:09, excesso: 02:09"
+        },
+        {
+          "data": "13/06/25 sex",
+          "issue": "Jornada diária excessiva",
+          "details": "Jornada trabalhada 11:40, excesso: 03:40"
+        },
+        {
+          "data": "16/06/25 seg",
+          "issue": "Jornada diária excessiva",
+          "details": "Jornada trabalhada 09:14, excesso: 01:14"
+        },
+        {
+          "data": "17/06/25 ter",
+          "issue": "Jornada diária excessiva",
+          "details": "Jornada trabalhada 10:30, excesso: 02:30"
+        },
+        {
+          "data": "18/06/25 qua",
+          "issue": "Jornada diária excessiva",
+          "details": "Jornada trabalhada 10:10, excesso: 02:10"
+        }
+      ]
+    },
+    "meal_break_validation": {
+      "total_violations": 1,
+      "violations": [
+        {
+          "data": "06/06/25 sex",
+          "issue": "Intervalo de refeição insuficiente",
+          "details": "Intervalo de refeição: Sem registro, necessário: 01:00"
+        }
+      ]
+    },
+    "rest_period_validation": {
+      "total_violations": 9,
+      "violations": [
+        {
+          "data": "21/05/25 qua → 22/05/25 qui",
+          "issue": "Período de descanso insuficiente",
+          "details": "Período de descanso: 09:09, necessário: 11:00"
+        },
+        {
+          "data": "22/05/25 qui → 23/05/25 sex",
+          "issue": "Período de descanso insuficiente",
+          "details": "Período de descanso: 08:22, necessário: 11:00"
+        },
+        {
+          "data": "25/05/25 dom → 26/05/25 seg",
+          "issue": "Período de descanso insuficiente",
+          "details": "Período de descanso: 10:46, necessário: 11:00"
+        },
+        {
+          "data": "26/05/25 seg → 27/05/25 ter",
+          "issue": "Período de descanso insuficiente",
+          "details": "Período de descanso: 07:49, necessário: 11:00"
+        },
+        {
+          "data": "28/05/25 qua → 29/05/25 qui",
+          "issue": "Período de descanso insuficiente",
+          "details": "Período de descanso: 10:31, necessário: 11:00"
+        },
+        {
+          "data": "30/05/25 sex → 31/05/25 sáb",
+          "issue": "Período de descanso insuficiente",
+          "details": "Período de descanso: 10:24, necessário: 11:00"
+        },
+        {
+          "data": "01/06/25 dom → 02/06/25 seg",
+          "issue": "Período de descanso insuficiente",
+          "details": "Período de descanso: 10:58, necessário: 11:00"
+        },
+        {
+          "data": "02/06/25 seg → 03/06/25 ter",
+          "issue": "Período de descanso insuficiente",
+          "details": "Período de descanso: 09:33, necessário: 11:00"
+        },
+        {
+          "data": "09/06/25 seg → 10/06/25 ter",
+          "issue": "Período de descanso insuficiente",
+          "details": "Período de descanso: 07:27, necessário: 11:00"
+        }
+      ]
+    }
+  },
+  "average_rest_between_shifts": {
+    "average_hours": 16.02,
+    "average_time_formatted": "16:01"
+  },
+  "rest_periods_analyzed": 24,
+  "compliance_summary": {
+    "total_working_days_analyzed": 25,
+    "total_compliance_issues": 34,
+    "compliance_rate": -36.0,
+    "issues_by_category": {
+      "excessive_daily_hours": 24,
+      "insufficient_meal_breaks": 1,
+      "insufficient_rest_periods": 9
+    }
+  },
+  "period_totals": {
+    "total_working_hours": "266:25",
+    "total_working_minutes": 15985,
+    "total_meal_break_hours": "29:04",
+    "total_meal_break_minutes": 1744,
+    "average_rest_between_shifts_hours": 16.02,
+    "periods_analyzed": 24
+  },
+  "metricas_qualidade": {
+    "pontualidade": 52.0,
+    "cumprimento_jornada": 96.0,
+    "regularidade_intervalos": 96.0,
+    "score_geral": 81.33333333333333
+  },
+  "detailed_problems": {
+    "excessive_daily_hours": [
+      {
+        "data": "21/05/25 qua",
+        "issue": "Jornada diária excessiva",
+        "details": "Jornada trabalhada 16:59, excesso: 08:59"
+      },
+      {
+        "data": "22/05/25 qui",
+        "issue": "Jornada diária excessiva",
+        "details": "Jornada trabalhada 11:58, excesso: 03:58"
+      },
+      {
+        "data": "23/05/25 sex",
+        "issue": "Jornada diária excessiva",
+        "details": "Jornada trabalhada 10:56, excesso: 02:56"
+      },
+      {
+        "data": "24/05/25 sáb",
+        "issue": "Jornada diária excessiva",
+        "details": "Jornada trabalhada 08:33, excesso: 00:33"
+      },
+      {
+        "data": "25/05/25 dom",
+        "issue": "Jornada diária excessiva",
+        "details": "Jornada trabalhada 10:08, excesso: 02:08"
+      },
+      {
+        "data": "26/05/25 seg",
+        "issue": "Jornada diária excessiva",
+        "details": "Jornada trabalhada 14:21, excesso: 06:21"
+      },
+      {
+        "data": "27/05/25 ter",
+        "issue": "Jornada diária excessiva",
+        "details": "Jornada trabalhada 10:31, excesso: 02:31"
+      },
+      {
+        "data": "28/05/25 qua",
+        "issue": "Jornada diária excessiva",
+        "details": "Jornada trabalhada 14:33, excesso: 06:33"
+      },
+      {
+        "data": "29/05/25 qui",
+        "issue": "Jornada diária excessiva",
+        "details": "Jornada trabalhada 08:17, excesso: 00:17"
+      },
+      {
+        "data": "30/05/25 sex",
+        "issue": "Jornada diária excessiva",
+        "details": "Jornada trabalhada 12:18, excesso: 04:18"
+      },
+      {
+        "data": "31/05/25 sáb",
+        "issue": "Jornada diária excessiva",
+        "details": "Jornada trabalhada 09:39, excesso: 01:39"
+      },
+      {
+        "data": "01/06/25 dom",
+        "issue": "Jornada diária excessiva",
+        "details": "Jornada trabalhada 08:53, excesso: 00:53"
+      },
+      {
+        "data": "02/06/25 seg",
+        "issue": "Jornada diária excessiva",
+        "details": "Jornada trabalhada 13:51, excesso: 05:51"
+      },
+      {
+        "data": "03/06/25 ter",
+        "issue": "Jornada diária excessiva",
+        "details": "Jornada trabalhada 11:19, excesso: 03:19"
+      },
+      {
+        "data": "04/06/25 qua",
+        "issue": "Jornada diária excessiva",
+        "details": "Jornada trabalhada 08:48, excesso: 00:48"
+      },
+      {
+        "data": "05/06/25 qui",
+        "issue": "Jornada diária excessiva",
+        "details": "Jornada trabalhada 10:10, excesso: 02:10"
+      },
+      {
+        "data": "09/06/25 seg",
+        "issue": "Jornada diária excessiva",
+        "details": "Jornada trabalhada 13:22, excesso: 05:22"
+      },
+      {
+        "data": "10/06/25 ter",
+        "issue": "Jornada diária excessiva",
+        "details": "Jornada trabalhada 09:14, excesso: 01:14"
+      },
+      {
+        "data": "11/06/25 qua",
+        "issue": "Jornada diária excessiva",
+        "details": "Jornada trabalhada 09:37, excesso: 01:37"
+      },
+      {
+        "data": "12/06/25 qui",
+        "issue": "Jornada diária excessiva",
+        "details": "Jornada trabalhada 10:09, excesso: 02:09"
+      },
+      {
+        "data": "13/06/25 sex",
+        "issue": "Jornada diária excessiva",
+        "details": "Jornada trabalhada 11:40, excesso: 03:40"
+      },
+      {
+        "data": "16/06/25 seg",
+        "issue": "Jornada diária excessiva",
+        "details": "Jornada trabalhada 09:14, excesso: 01:14"
+      },
+      {
+        "data": "17/06/25 ter",
+        "issue": "Jornada diária excessiva",
+        "details": "Jornada trabalhada 10:30, excesso: 02:30"
+      },
+      {
+        "data": "18/06/25 qua",
+        "issue": "Jornada diária excessiva",
+        "details": "Jornada trabalhada 10:10, excesso: 02:10"
+      }
+    ],
+    "insufficient_meal_breaks": [
+      {
+        "data": "06/06/25 sex",
+        "issue": "Intervalo de refeição insuficiente",
+        "details": "Intervalo de refeição: Sem registro, necessário: 01:00"
+      }
+    ],
+    "insufficient_rest_periods": [
+      {
+        "data": "21/05/25 qua → 22/05/25 qui",
+        "issue": "Período de descanso insuficiente",
+        "details": "Período de descanso: 09:09, necessário: 11:00"
+      },
+      {
+        "data": "22/05/25 qui → 23/05/25 sex",
+        "issue": "Período de descanso insuficiente",
+        "details": "Período de descanso: 08:22, necessário: 11:00"
+      },
+      {
+        "data": "25/05/25 dom → 26/05/25 seg",
+        "issue": "Período de descanso insuficiente",
+        "details": "Período de descanso: 10:46, necessário: 11:00"
+      },
+      {
+        "data": "26/05/25 seg → 27/05/25 ter",
+        "issue": "Período de descanso insuficiente",
+        "details": "Período de descanso: 07:49, necessário: 11:00"
+      },
+      {
+        "data": "28/05/25 qua → 29/05/25 qui",
+        "issue": "Período de descanso insuficiente",
+        "details": "Período de descanso: 10:31, necessário: 11:00"
+      },
+      {
+        "data": "30/05/25 sex → 31/05/25 sáb",
+        "issue": "Período de descanso insuficiente",
+        "details": "Período de descanso: 10:24, necessário: 11:00"
+      },
+      {
+        "data": "01/06/25 dom → 02/06/25 seg",
+        "issue": "Período de descanso insuficiente",
+        "details": "Período de descanso: 10:58, necessário: 11:00"
+      },
+      {
+        "data": "02/06/25 seg → 03/06/25 ter",
+        "issue": "Período de descanso insuficiente",
+        "details": "Período de descanso: 09:33, necessário: 11:00"
+      },
+      {
+        "data": "09/06/25 seg → 10/06/25 ter",
+        "issue": "Período de descanso insuficiente",
+        "details": "Período de descanso: 07:27, necessário: 11:00"
+      }
+    ],
+    "all_issues": [
+      {
+        "data": "21/05/25 qua",
+        "issue": "Jornada diária excessiva",
+        "details": "Jornada trabalhada 16:59, excesso: 08:59"
+      },
+      {
+        "data": "22/05/25 qui",
+        "issue": "Jornada diária excessiva",
+        "details": "Jornada trabalhada 11:58, excesso: 03:58"
+      },
+      {
+        "data": "23/05/25 sex",
+        "issue": "Jornada diária excessiva",
+        "details": "Jornada trabalhada 10:56, excesso: 02:56"
+      },
+      {
+        "data": "24/05/25 sáb",
+        "issue": "Jornada diária excessiva",
+        "details": "Jornada trabalhada 08:33, excesso: 00:33"
+      },
+      {
+        "data": "25/05/25 dom",
+        "issue": "Jornada diária excessiva",
+        "details": "Jornada trabalhada 10:08, excesso: 02:08"
+      },
+      {
+        "data": "26/05/25 seg",
+        "issue": "Jornada diária excessiva",
+        "details": "Jornada trabalhada 14:21, excesso: 06:21"
+      },
+      {
+        "data": "27/05/25 ter",
+        "issue": "Jornada diária excessiva",
+        "details": "Jornada trabalhada 10:31, excesso: 02:31"
+      },
+      {
+        "data": "28/05/25 qua",
+        "issue": "Jornada diária excessiva",
+        "details": "Jornada trabalhada 14:33, excesso: 06:33"
+      },
+      {
+        "data": "29/05/25 qui",
+        "issue": "Jornada diária excessiva",
+        "details": "Jornada trabalhada 08:17, excesso: 00:17"
+      },
+      {
+        "data": "30/05/25 sex",
+        "issue": "Jornada diária excessiva",
+        "details": "Jornada trabalhada 12:18, excesso: 04:18"
+      },
+      {
+        "data": "31/05/25 sáb",
+        "issue": "Jornada diária excessiva",
+        "details": "Jornada trabalhada 09:39, excesso: 01:39"
+      },
+      {
+        "data": "01/06/25 dom",
+        "issue": "Jornada diária excessiva",
+        "details": "Jornada trabalhada 08:53, excesso: 00:53"
+      },
+      {
+        "data": "02/06/25 seg",
+        "issue": "Jornada diária excessiva",
+        "details": "Jornada trabalhada 13:51, excesso: 05:51"
+      },
+      {
+        "data": "03/06/25 ter",
+        "issue": "Jornada diária excessiva",
+        "details": "Jornada trabalhada 11:19, excesso: 03:19"
+      },
+      {
+        "data": "04/06/25 qua",
+        "issue": "Jornada diária excessiva",
+        "details": "Jornada trabalhada 08:48, excesso: 00:48"
+      },
+      {
+        "data": "05/06/25 qui",
+        "issue": "Jornada diária excessiva",
+        "details": "Jornada trabalhada 10:10, excesso: 02:10"
+      },
+      {
+        "data": "09/06/25 seg",
+        "issue": "Jornada diária excessiva",
+        "details": "Jornada trabalhada 13:22, excesso: 05:22"
+      },
+      {
+        "data": "10/06/25 ter",
+        "issue": "Jornada diária excessiva",
+        "details": "Jornada trabalhada 09:14, excesso: 01:14"
+      },
+      {
+        "data": "11/06/25 qua",
+        "issue": "Jornada diária excessiva",
+        "details": "Jornada trabalhada 09:37, excesso: 01:37"
+      },
+      {
+        "data": "12/06/25 qui",
+        "issue": "Jornada diária excessiva",
+        "details": "Jornada trabalhada 10:09, excesso: 02:09"
+      },
+      {
+        "data": "13/06/25 sex",
+        "issue": "Jornada diária excessiva",
+        "details": "Jornada trabalhada 11:40, excesso: 03:40"
+      },
+      {
+        "data": "16/06/25 seg",
+        "issue": "Jornada diária excessiva",
+        "details": "Jornada trabalhada 09:14, excesso: 01:14"
+      },
+      {
+        "data": "17/06/25 ter",
+        "issue": "Jornada diária excessiva",
+        "details": "Jornada trabalhada 10:30, excesso: 02:30"
+      },
+      {
+        "data": "18/06/25 qua",
+        "issue": "Jornada diária excessiva",
+        "details": "Jornada trabalhada 10:10, excesso: 02:10"
+      },
+      {
+        "data": "06/06/25 sex",
+        "issue": "Intervalo de refeição insuficiente",
+        "details": "Intervalo de refeição: Sem registro, necessário: 01:00"
+      },
+      {
+        "data": "21/05/25 qua → 22/05/25 qui",
+        "issue": "Período de descanso insuficiente",
+        "details": "Período de descanso: 09:09, necessário: 11:00"
+      },
+      {
+        "data": "22/05/25 qui → 23/05/25 sex",
+        "issue": "Período de descanso insuficiente",
+        "details": "Período de descanso: 08:22, necessário: 11:00"
+      },
+      {
+        "data": "25/05/25 dom → 26/05/25 seg",
+        "issue": "Período de descanso insuficiente",
+        "details": "Período de descanso: 10:46, necessário: 11:00"
+      },
+      {
+        "data": "26/05/25 seg → 27/05/25 ter",
+        "issue": "Período de descanso insuficiente",
+        "details": "Período de descanso: 07:49, necessário: 11:00"
+      },
+      {
+        "data": "28/05/25 qua → 29/05/25 qui",
+        "issue": "Período de descanso insuficiente",
+        "details": "Período de descanso: 10:31, necessário: 11:00"
+      },
+      {
+        "data": "30/05/25 sex → 31/05/25 sáb",
+        "issue": "Período de descanso insuficiente",
+        "details": "Período de descanso: 10:24, necessário: 11:00"
+      },
+      {
+        "data": "01/06/25 dom → 02/06/25 seg",
+        "issue": "Período de descanso insuficiente",
+        "details": "Período de descanso: 10:58, necessário: 11:00"
+      },
+      {
+        "data": "02/06/25 seg → 03/06/25 ter",
+        "issue": "Período de descanso insuficiente",
+        "details": "Período de descanso: 09:33, necessário: 11:00"
+      },
+      {
+        "data": "09/06/25 seg → 10/06/25 ter",
+        "issue": "Período de descanso insuficiente",
+        "details": "Período de descanso: 07:27, necessário: 11:00"
+      }
+    ]
+  },
+  "metadata": {
+    "export_timestamp": "2025-09-15T23:04:13.969798",
+    "data_source": "EDA.ipynb",
+    "total_records_processed": 31
+  }
+}

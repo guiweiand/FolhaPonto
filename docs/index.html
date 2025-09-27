@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Cronoanálise da Jornada de Trabalho</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .main-header {
+            padding: 2rem 0;
+            text-align: center;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .main-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .main-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        
+        .metric-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+            border-left: 4px solid #667eea;
+        }
+        
+        .metric-card h3 {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .metric-card .value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .section {
+            background: white;
+            margin: 2rem 0;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .section h2 {
+            color: #333;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #667eea;
+        }
+        
+        .risk-analysis {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+        
+        .risk-card {
+            text-align: center;
+            padding: 1.5rem;
+            background: #F44336;
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .risk-card h3 {
+            margin-bottom: 0.5rem;
+        }
+        
+        .risk-card .level {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+        
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .chart-container {
+            background: white;
+            padding: 1rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .alert {
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 5px;
+            border-left: 5px solid;
+        }
+        
+        .alert-critical {
+            background-color: #ffebee;
+            border-left-color: #f44336;
+            color: #c62828;
+        }
+        
+        .alert-warning {
+            background-color: #fff3e0;
+            border-left-color: #ff9800;
+            color: #e65100;
+        }
+        
+        .alert-success {
+            background-color: #e8f5e8;
+            border-left-color: #4caf50;
+            color: #2e7d32;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        
+        .data-table th,
+        .data-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .data-table th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .data-table tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .sidebar {
+            position: fixed;
+            left: -300px;
+            top: 0;
+            width: 300px;
+            height: 100vh;
+            background: white;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            transition: left 0.3s ease;
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+        
+        .sidebar.open {
+            left: 0;
+        }
+        
+        .sidebar-toggle {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 1001;
+        }
+        
+        .pdf-viewer {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 2000;
+        }
+        
+        .pdf-content {
+            position: relative;
+            width: 90%;
+            height: 90%;
+            margin: 5% auto;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .pdf-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #f44336;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 2001;
+        }
+        
+        .footer {
+            text-align: center;
+            color: #666;
+            padding: 2rem;
+            margin-top: 3rem;
+            border-top: 1px solid #ddd;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .main-header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .metrics-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="sidebar-toggle" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <h3><i class="fas fa-folder"></i> Dados Carregados</h3>
+        <div class="alert-success">✅ timesheet_webapp_data.json</div>
+        
+        <hr style="margin: 1rem 0;">
+        
+        <h3><i class="fas fa-user"></i> Informações do Funcionário</h3>
+        <p><strong>Nome:</strong> ANDRE LUIS DE MORAES DA ROSA</p>
+        <p><strong>CPF:</strong> 019.450.890-08</p>
+        <p><strong>Empresa:</strong> None</p>
+        <p><strong>CNPJ:</strong> 88.501.093/0001-89</p>
+        <p><strong>Período:</strong> 21/05/2025 à 20/06/2025</p>
+        
+        <hr style="margin: 1rem 0;">
+        
+        <h3><i class="fas fa-chart-bar"></i> Dados Carregados</h3>
+        <p>✅ Dados Unificados do Timesheet</p>
+        
+        <hr style="margin: 1rem 0;">
+        
+        <h3><i class="fas fa-file-pdf"></i> Visualizar PDF</h3>
+        <button onclick="showPDF()" style="width: 100%; padding: 10px; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer;"><i class="fas fa-file-pdf"></i> Ver Ficha de Ponto (PDF)</button>
+    </div>
+    
+    <!-- PDF Viewer -->
+    <div class="pdf-viewer" id="pdfViewer">
+        <div class="pdf-content">
+            <button class="pdf-close" onclick="hidePDF()">
+                <i class="fas fa-times"></i>
+            </button>
+            <iframe src="data:application/pdf;base64,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NjExLjAgODMzLjAgNzIyLjAgNzc4LjAgNjY3LjAgNzc4LjAgNzIyLjAgNjY3LjAgNjExLjAgNzIyLjAgNjY3LjAgOTQ0LjAgNjY3LjAgNjY3LjAgNjExLjAgMzMzLjAgMjc4LjAgMzMzLjAgNTg0LjAgNTU2LjAgMzMzLjAgNTU2LjAgNjExLjAgNTU2LjAgNjExLjAgNTU2LjAgMzMzLjAgNjExLjAgNjExLjAgMjc4LjAgMjc4LjAgNTU2LjAgMjc4LjAgODg5LjAgNjExLjAgNjExLjAgNjExLjAgNjExLjAgMzg5LjAgNTU2LjAgMzMzLjAgNjExLjAgNTU2LjAgNzc4LjAgNTU2LjAgNTU2LjAgNTAwLjAgMzg5LjAgMjgwLjAgMzg5LjAgNTg0LjAgNzUwLjAgNTU2LjAgNzUwLjAgMjc4LjAgNTU2LjAgNTAwLjAgMTAwMC4wIDU1Ni4wIDU1Ni4wIDMzMy4wIDEwMDAuMCA2NjcuMCAzMzMuMCAxMDAwLjAgNzUwLjAgNjExLjAgNzUwLjAgNzUwLjAgMjc4LjAgMjc4LjAgNTAwLjAgNTAwLjAgMzUwLjAgNTU2LjAgMTAwMC4wIDMzMy4wIDEwMDAuMCA1NTYuMCAzMzMuMCA5NDQuMCA3NTAuMCA1MDAuMCA2NjcuMCAyNzguMCAzMzMuMCA1NTYuMCA1NTYuMCA1NTYuMCA1NTYuMCAyODAuMCA1NTYuMCAzMzMuMCA3MzcuMCAzNzAuMCA1NTYuMCA1ODQuMCAzMzMuMCA3MzcuMCA1NTIuMCA0MDAuMCA1NDkuMCAzMzMuMCAzMzMuMCAzMzMuMCA1NzYuMCA1NTYuMCAzMzMuMCAzMzMuMCAzMzMuMCAzNjUuMCA1NTYuMCA4MzQuMCA4MzQuMCA4MzQuMCA2MTEuMCA3MjIuMCA3MjIuMCA3MjIuMCA3MjIuMCA3MjIuMCA3MjIuMCAxMDAwLjAgNzIyLjAgNjY3LjAgNjY3LjAgNjY3LjAgNjY3LjAgMjc4LjAgMjc4LjAgMjc4LjAgMjc4LjAgNzIyLjAgNzIyLjAgNzc4LjAgNzc4LjAgNzc4LjAgNzc4LjAgNzc4LjAgNTg0LjAgNzc4LjAgNzIyLjAgNzIyLjAgNzIyLjAgNzIyLjAgNjY3LjAgNjY3LjAgNjExLjAgNTU2LjAgNTU2LjAgNTU2LjAgNTU2LjAgNTU2LjAgNTU2LjAgODg5LjAgNTU2LjAgNTU2LjAgNTU2LjAgNTU2LjAgNTU2LjAgMjc4LjAgMjc4LjAgMjc4LjAgMjc4LjAgNjExLjAgNjExLjAgNjExLjAgNjExLjAgNjExLjAgNjExLjAgNjExLjAgNTQ5LjAgNjExLjAgNjExLjAgNjExLjAgNjExLjAgNjExLjAgNTU2LjAgNjExLjAgNTU2LjAgDQpdDQplbmRvYmoNCjcgMCBvYmoNCjw8IC9UeXBlIC9FbmNvZGluZw0KL0Jhc2VFbmNvZGluZyAvV2luQW5zaUVuY29kaW5nDQo+Pg0KZW5kb2JqDQoxMSAwIG9iag0KPDwgL1R5cGUgL0ZvbnQNCi9TdWJ0eXBlIC9UcnVlVHlwZQ0KL05hbWUgL0FyaWFsDQovQmFzZUZvbnQgL0FyaWFsDQovRmlyc3RDaGFyIDMwDQovTGFzdENoYXIgMjU1DQovRm9udERlc2NyaXB0b3IgMTMgMCBSDQovV2lkdGhzIDE0IDAgUg0KL0VuY29kaW5nIDEyIDAgUg0KPj4NCmVuZG9iag0KMTMgMCBvYmoNCjw8IC9UeXBlIC9Gb250RGVzY3JpcHRvcg0KL0ZvbnROYW1lIC9BcmlhbA0KL0FzY2VudCA5MDUuMA0KL0NhcEhlaWdodCA5MDUuMA0KL0Rlc2NlbnQgLTIxMi4wDQovRmxhZ3MgMzINCi9Gb250QkJveCBbIC0yNTAuMCAtMjEyLjAgMjY2NS4wIDkwNS4wIF0NCi9JdGFsaWNBbmdsZSAwDQovU3RlbVYgMA0KPj4NCmVuZG9iag0KMTQgMCBvYmoNClsNCjc1MC4wIDc1MC4wIDI3OC4wIDI3OC4wIDM1NS4wIDU1Ni4wIDU1Ni4wIDg4OS4wIDY2Ny4wIDE5MS4wIDMzMy4wIDMzMy4wIDM4OS4wIDU4NC4wIDI3OC4wIDMzMy4wIDI3OC4wIDI3OC4wIDU1Ni4wIDU1Ni4wIDU1Ni4wIDU1Ni4wIDU1Ni4wIDU1Ni4wIDU1Ni4wIDU1Ni4wIDU1Ni4wIDU1Ni4wIDI3OC4wIDI3OC4wIDU4NC4wIDU4NC4wIDU4NC4wIDU1Ni4wIDEwMTUuMCA2NjcuMCA2NjcuMCA3MjIuMCA3MjIuMCA2NjcuMCA2MTEuMCA3NzguMCA3MjIuMCAyNzguMCA1MDAuMCA2NjcuMCA1NTYuMCA4MzMuMCA3MjIuMCA3NzguMCA2NjcuMCA3NzguMCA3MjIuMCA2NjcuMCA2MTEuMCA3MjIuMCA2NjcuMCA5NDQuMCA2NjcuMCA2NjcuMCA2MTEuMCAyNzguMCAyNzguMCAyNzguMCA0NjkuMCA1NTYuMCAzMzMuMCA1NTYuMCA1NTYuMCA1MDAuMCA1NTYuMCA1NTYuMCAyNzguMCA1NTYuMCA1NTYuMCAyMjIuMCAyMjIuMCA1MDAuMCAyMjIuMCA4MzMuMCA1NTYuMCA1NTYuMCA1NTYuMCA1NTYuMCAzMzMuMCA1MDAuMCAyNzguMCA1NTYuMCA1MDAuMCA3MjIuMCA1MDAuMCA1MDAuMCA1MDAuMCAzMzQuMCAyNjAuMCAzMzQuMCA1ODQuMCA3NTAuMCA1NTYuMCA3NTAuMCAyMjIuMCA1NTYuMCAzMzMuMCAxMDAwLjAgNTU2LjAgNTU2LjAgMzMzLjAgMTAwMC4wIDY2Ny4wIDMzMy4wIDEwMDAuMCA3NTAuMCA2MTEuMCA3NTAuMCA3NTAuMCAyMjIuMCAyMjIuMCAzMzMuMCAzMzMuMCAzNTAuMCA1NTYuMCAxMDAwLjAgMzMzLjAgMTAwMC4wIDUwMC4wIDMzMy4wIDk0NC4wIDc1MC4wIDUwMC4wIDY2Ny4wIDI3OC4wIDMzMy4wIDU1Ni4wIDU1Ni4wIDU1Ni4wIDU1Ni4wIDI2MC4wIDU1Ni4wIDMzMy4wIDczNy4wIDM3MC4wIDU1Ni4wIDU4NC4wIDMzMy4wIDczNy4wIDU1Mi4wIDQwMC4wIDU0OS4wIDMzMy4wIDMzMy4wIDMzMy4wIDU3Ni4wIDUzNy4wIDMzMy4wIDMzMy4wIDMzMy4wIDM2NS4wIDU1Ni4wIDgzNC4wIDgzNC4wIDgzNC4wIDYxMS4wIDY2Ny4wIDY2Ny4wIDY2Ny4wIDY2Ny4wIDY2Ny4wIDY2Ny4wIDEwMDAuMCA3MjIuMCA2NjcuMCA2NjcuMCA2NjcuMCA2NjcuMCAyNzguMCAyNzguMCAyNzguMCAyNzguMCA3MjIuMCA3MjIuMCA3NzguMCA3NzguMCA3NzguMCA3NzguMCA3NzguMCA1ODQuMCA3NzguMCA3MjIuMCA3MjIuMCA3MjIuMCA3MjIuMCA2NjcuMCA2NjcuMCA2MTEuMCA1NTYuMCA1NTYuMCA1NTYuMCA1NTYuMCA1NTYuMCA1NTYuMCA4ODkuMCA1MDAuMCA1NTYuMCA1NTYuMCA1NTYuMCA1NTYuMCAyNzguMCAyNzguMCAyNzguMCAyNzguMCA1NTYuMCA1NTYuMCA1NTYuMCA1NTYuMCA1NTYuMCA1NTYuMCA1NTYuMCA1NDkuMCA2MTEuMCA1NTYuMCA1NTYuMCA1NTYuMCA1NTYuMCA1MDAuMCA1NTYuMCA1MDAuMCANCl0NCmVuZG9iag0KMTIgMCBvYmoNCjw8IC9UeXBlIC9FbmNvZGluZw0KL0Jhc2VFbmNvZGluZyAvV2luQW5zaUVuY29kaW5nDQo+Pg0KZW5kb2JqDQp4cmVmDQowIDE3DQowMDAwMDAwMDAwIDY1NTM1IGYNCjAwMDAwMDAwMTcgMDAwMDAgbg0KMDAwMDAwMDI1NyAwMDAwMCBuDQowMDAwMDAwMzEyIDAwMDAwIG4NCjAwMDAwMjIwNjUgMDAwMDAgbg0KMDAwMDAwMDM2NCAwMDAwMCBuDQowMDAwMDIzNjI5IDAwMDAwIG4NCjAwMDAwMjUzOTkgMDAwMDAgbg0KMDAwMDAyMzgxMyAwMDAwMCBuDQowMDAwMDI0MDEyIDAwMDAwIG4NCjAwMDAwMjIxODcgMDAwMDAgbg0KMDAwMDAyNTQ3MiAwMDAwMCBuDQowMDAwMDI3MjM0IDAwMDAwIG4NCjAwMDAwMjU2NTAgMDAwMDAgbg0KMDAwMDAyNTg0NSAwMDAwMCBuDQowMDAwMDIxNzY2IDAwMDAwIG4NCjAwMDAwMjIxMzIgMDAwMDAgbg0KdHJhaWxlcg0KPDwgL1NpemUgMTcNCi9JbmZvIDEgMCBSDQovUm9vdCAxNiAwIFINCi9JRFsgIDwzNDMzMzUzODMxMzg0MjMwMmQzNjM2NDI0NDJkMzQ0MjM1MzEyZDM4NDMzNzM2MmQ0MTQyNDEzMjM4MzA0MzM3MzkzNTMzNDE+IDwzNDMzMzUzODMxMzg0MjMwMmQzNjM2NDI0NDJkMzQ0MjM1MzEyZDM4NDMzNzM2MmQ0MTQyNDEzMjM4MzA0MzM3MzkzNTMzNDE+IF0NCj4+DQpzdGFydHhyZWYNCjI3MzA4DQolJUVPRg0K" 
+                    width="100%" height="100%" 
+                    style="border: none;">
+            </iframe>
+        </div>
+    </div>
+    
+    <div class="container">
+        <!-- Título Principal -->
+        <div class="main-header">
+            <h1><i class="fas fa-clock"></i> Dashboard - Cronoanálise da Jornada de Trabalho</h1>
+            <p>Análise completa de conformidade trabalhista e gestão de jornadas</p>
+        </div>
+        
+        <!-- Métricas Principais -->
+        <div class="section">
+            <h2><i class="fas fa-chart-line"></i> Visão Geral</h2>
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <h3><i class="fas fa-calendar"></i> Total de Dias</h3>
+                    <div class="value">31</div>
+                </div>
+                <div class="metric-card">
+                    <h3><i class="fas fa-building"></i> Dias Trabalhados</h3>
+                    <div class="value">25</div>
+                </div>
+                <div class="metric-card">
+                    <h3><i class="fas fa-clock"></i> Horas Trabalhadas</h3>
+                    <div class="value">277.8h</div>
+                </div>
+                <div class="metric-card">
+                    <h3><i class="fas fa-utensils"></i> Horas de Intervalo</h3>
+                    <div class="value">30.2h</div>
+                </div>
+                <div class="metric-card">
+                    <h3><i class="fas fa-exclamation-triangle"></i> Problemas de Conformidade</h3>
+                    <div class="value">34</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Análise de Risco -->
+        <div class="section">
+            <h2><i class="fas fa-crosshairs"></i> Análise de Risco</h2>
+            <div class="risk-analysis">
+                <div class="risk-card">
+                    <h3>Nível de Risco</h3>
+                    <div class="level">CRÍTICO</div>
+                </div>
+                <div class="metric-card">
+                    <h3><i class="fas fa-chart-line"></i> Taxa de Conformidade</h3>
+                    <div class="value">36.0%</div>
+                </div>
+                <div class="metric-card">
+                    <h3><i class="fas fa-exclamation-circle"></i> Total de Violações</h3>
+                    <div class="value">34</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Gráficos -->
+        <div class="section">
+            <h2><i class="fas fa-chart-bar"></i> Análise Diária</h2>
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <div id="hoursChart"></div>
+                </div>
+                <div class="chart-container">
+                    <div id="mealChart"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- KPIs -->
+        
+        <div class="section">
+            <h2><i class="fas fa-target"></i> Indicadores de Desempenho (KPIs)</h2>
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <h3><i class="fas fa-clock"></i> Pontualidade</h3>
+                    <div class="value">52.0%</div>
+                </div>
+                <div class="metric-card">
+                    <h3><i class="fas fa-chart-bar"></i> Cumprimento Jornada</h3>
+                    <div class="value">96.0%</div>
+                </div>
+                <div class="metric-card">
+                    <h3><i class="fas fa-utensils"></i> Regularidade Intervalos</h3>
+                    <div class="value">96.0%</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Plano de Ação -->
+        
+        <div class="section">
+            <h2><i class="fas fa-clipboard-list"></i> Plano de Ação</h2>
+            
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <h3><i class="fas fa-exclamation-circle"></i> Alertas Críticos</h3>
+                    <div class="value">24</div>
+                </div>
+                <div class="metric-card">
+                    <h3><i class="fas fa-exclamation-triangle"></i> Alertas Urgentes</h3>
+                    <div class="value">9</div>
+                </div>
+                <div class="metric-card">
+                    <h3><i class="fas fa-chart-bar"></i> Total de Alertas</h3>
+                    <div class="value">34</div>
+                </div>
+                <div class="metric-card">
+                    <h3><i class="fas fa-lightbulb"></i> Recomendações</h3>
+                    <div class="value">5</div>
+                </div>
+            </div>
+            
+            
+            <div class="alert alert-critical">
+                <h4><i class="fas fa-exclamation-circle"></i> Ações Imediatas - Horas Excessivas</h4>
+                <p><strong>Jornadas Excessivas Detectadas</strong><br>
+                24 dias com jornada superior ao limite legal foram identificados.<br>
+                <em>Ação necessária: Revisar escalas e implementar controle de jornada</em><br>
+                <em>Prazo: Imediato</em></p>
+            </div>
+            
+            
+            <div class="alert alert-warning">
+                <h4><i class="fas fa-exclamation-triangle"></i> Ações Urgentes - Períodos de Descanso</h4>
+                <p><strong>Descanso Insuficiente Entre Jornadas</strong><br>
+                9 ocorrências de descanso inferior a 11 horas entre jornadas.<br>
+                <em>Ação necessária: Ajustar horários para garantir descanso adequado</em><br>
+                <em>Prazo: 48 horas</em></p>
+            </div>
+            
+            
+            <div class="alert alert-warning">
+                <h4><i class="fas fa-utensils"></i> Ações Preventivas - Intervalos de Refeição</h4>
+                <p><strong>Intervalos de Refeição Irregulares</strong><br>
+                1 ocorrências de intervalos inadequados.<br>
+                <em>Ação necessária: Orientar funcionário sobre obrigatoriedade dos intervalos</em><br>
+                <em>Prazo: 7 dias</em></p>
+            </div>
+        </div>
+        
+        <!-- Análise Mensal -->
+        
+        <div class="section">
+            <h2><i class="fas fa-chart-pie"></i> Análise de Jornada Mensal</h2>
+            <div class="charts-grid">
+                <div>
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <h3><i class="fas fa-clock"></i> Horas Trabalhadas</h3>
+                            <div class="value">277.8h</div>
+                        </div>
+                        <div class="metric-card">
+                            <h3><i class="fas fa-clipboard-list"></i> Horas Contratuais</h3>
+                            <div class="value">200.0h</div>
+                        </div>
+                        <div class="metric-card">
+                            <h3><i class="fas fa-plus"></i> Diferença</h3>
+                            <div class="value">77.8h</div>
+                        </div>
+                        <div class="metric-card">
+                            <h3><i class="fas fa-percentage"></i> % Cumprimento</h3>
+                            <div class="value">138.9%</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <div id="pieChart"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tabela Detalhada -->
+        <div class="section">
+            <h2><i class="fas fa-table"></i> Dados Detalhados por Dia</h2>
+            <div style="overflow-x: auto;">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Entrada</th>
+                            <th>Saída</th>
+                            <th>Horas Trabalhadas</th>
+                            <th>Intervalo Almoço</th>
+                            <th>Observações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                        <tr>
+                            <td>21/05/25 qua</td>
+                            <td>06:24</td>
+                            <td>01:26</td>
+                            <td>16.98h</td>
+                            <td>1.35h</td>
+                            <td>Excesso de 9.0h - possível irregularidade</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>22/05/25 qui</td>
+                            <td>10:35</td>
+                            <td>23:42</td>
+                            <td>11.97h</td>
+                            <td>1.15h</td>
+                            <td>Excesso de 4.0h - possível irregularidade</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>23/05/25 sex</td>
+                            <td>08:05</td>
+                            <td>20:32</td>
+                            <td>10.93h</td>
+                            <td>1.18h</td>
+                            <td>Excesso de 2.9h - possível irregularidade</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>24/05/25 sáb</td>
+                            <td>08:22</td>
+                            <td>18:02</td>
+                            <td>8.55h</td>
+                            <td>1.12h</td>
+                            <td>Excesso de 0.6h - possível irregularidade</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>25/05/25 dom</td>
+                            <td>07:37</td>
+                            <td>19:07</td>
+                            <td>10.13h</td>
+                            <td>1.37h</td>
+                            <td>Excesso de 2.1h - possível irregularidade</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>26/05/25 seg</td>
+                            <td>05:54</td>
+                            <td>21:17</td>
+                            <td>14.35h</td>
+                            <td>1.03h</td>
+                            <td>Excesso de 6.3h - possível irregularidade</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>27/05/25 ter</td>
+                            <td>05:07</td>
+                            <td>18:20</td>
+                            <td>10.52h</td>
+                            <td>1.18h</td>
+                            <td>Excesso de 2.5h - possível irregularidade</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>28/05/25 qua</td>
+                            <td>06:11</td>
+                            <td>22:06</td>
+                            <td>14.55h</td>
+                            <td>1.00h</td>
+                            <td>Excesso de 6.6h - possível irregularidade</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>29/05/25 qui</td>
+                            <td>08:37</td>
+                            <td>18:11</td>
+                            <td>8.28h</td>
+                            <td>1.28h</td>
+                            <td>Excesso de 0.3h - possível irregularidade</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>30/05/25 sex</td>
+                            <td>08:03</td>
+                            <td>21:26</td>
+                            <td>12.30h</td>
+                            <td>1.08h</td>
+                            <td>Excesso de 4.3h - possível irregularidade</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>31/05/25 sáb</td>
+                            <td>07:51</td>
+                            <td>18:37</td>
+                            <td>9.65h</td>
+                            <td>1.12h</td>
+                            <td>Excesso de 1.7h - possível irregularidade</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>01/06/25 dom</td>
+                            <td>07:55</td>
+                            <td>18:43</td>
+                            <td>8.88h</td>
+                            <td>1.92h</td>
+                            <td>Excesso de 0.9h - possível irregularidade</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>02/06/25 seg</td>
+                            <td>05:42</td>
+                            <td>20:52</td>
+                            <td>13.85h</td>
+                            <td>1.02h</td>
+                            <td>Excesso de 5.8h - possível irregularidade</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>03/06/25 ter</td>
+                            <td>06:26</td>
+                            <td>19:18</td>
+                            <td>11.32h</td>
+                            <td>1.55h</td>
+                            <td>Excesso de 3.3h - possível irregularidade</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>04/06/25 qua</td>
+                            <td>08:47</td>
+                            <td>18:38</td>
+                            <td>8.80h</td>
+                            <td>1.05h</td>
+                            <td>Excesso de 0.8h - possível irregularidade</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>05/06/25 qui</td>
+                            <td>08:11</td>
+                            <td>19:45</td>
+                            <td>10.17h</td>
+                            <td>1.07h</td>
+                            <td>Excesso de 2.2h - possível irregularidade</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>06/06/25 sex</td>
+                            <td>10:14</td>
+                            <td>11:29</td>
+                            <td>1.25h</td>
+                            <td>0.00h</td>
+                            <td>Jornada abaixo do normal</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>09/06/25 seg</td>
+                            <td>09:30</td>
+                            <td>00:46</td>
+                            <td>13.37h</td>
+                            <td>1.27h</td>
+                            <td>Excesso de 5.4h - possível irregularidade</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>10/06/25 ter</td>
+                            <td>08:13</td>
+                            <td>19:00</td>
+                            <td>9.23h</td>
+                            <td>1.55h</td>
+                            <td>Excesso de 1.2h - possível irregularidade</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>11/06/25 qua</td>
+                            <td>08:13</td>
+                            <td>19:00</td>
+                            <td>9.62h</td>
+                            <td>1.17h</td>
+                            <td>Excesso de 1.6h - possível irregularidade</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>12/06/25 qui</td>
+                            <td>07:44</td>
+                            <td>19:00</td>
+                            <td>10.15h</td>
+                            <td>1.12h</td>
+                            <td>Excesso de 2.2h - possível irregularidade</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>13/06/25 sex</td>
+                            <td>08:20</td>
+                            <td>21:00</td>
+                            <td>11.67h</td>
+                            <td>1.00h</td>
+                            <td>Excesso de 3.7h - possível irregularidade</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>16/06/25 seg</td>
+                            <td>07:36</td>
+                            <td>18:00</td>
+                            <td>9.23h</td>
+                            <td>1.17h</td>
+                            <td>Excesso de 1.2h - possível irregularidade</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>17/06/25 ter</td>
+                            <td>07:30</td>
+                            <td>19:00</td>
+                            <td>10.50h</td>
+                            <td>1.00h</td>
+                            <td>Excesso de 2.5h - possível irregularidade</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>18/06/25 qua</td>
+                            <td>07:00</td>
+                            <td>18:30</td>
+                            <td>10.17h</td>
+                            <td>1.33h</td>
+                            <td>Excesso de 2.2h - possível irregularidade</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>19/06/25 qui</td>
+                            <td>07:00</td>
+                            <td>19:30</td>
+                            <td>11.33h</td>
+                            <td>1.17h</td>
+                            <td>Trabalho em feriado</td>
+                        </tr>
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Exportar -->
+        <div class="section">
+            <h2><i class="fas fa-download"></i> Exportar Relatório</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                <button onclick="alert('Funcionalidade em desenvolvimento')" 
+                        style="padding: 1rem; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                    <i class="fas fa-file-pdf"></i> Gerar Relatório PDF
+                </button>
+                <button onclick="alert('Funcionalidade em desenvolvimento')" 
+                        style="padding: 1rem; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                    <i class="fas fa-envelope"></i> Enviar por Email
+                </button>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="footer">
+            <p>Dashboard de Cronoanálise da Jornada de Trabalho</p>
+            <p>Desenvolvido para análise de conformidade trabalhista</p>
+            <p><em>Dados atualizados em: 15/09/2025 às 23:40</em></p>
+        </div>
+    </div>
+    
+    <script>
+        // Dados dos gráficos
+        const chartsData = {"hours_chart": "{\"data\":[{\"hovertemplate\":\"data_str=%{x}\\u003cbr\\u003ehoras_trabalhadas=%{y}\\u003cextra\\u003e\\u003c\\u002fextra\\u003e\",\"legendgroup\":\"\",\"marker\":{\"color\":\"#636efa\",\"pattern\":{\"shape\":\"\"}},\"name\":\"\",\"orientation\":\"v\",\"showlegend\":false,\"textposition\":\"auto\",\"x\":[\"21\\u002f05\",\"22\\u002f05\",\"23\\u002f05\",\"24\\u002f05\",\"25\\u002f05\",\"26\\u002f05\",\"27\\u002f05\",\"28\\u002f05\",\"29\\u002f05\",\"30\\u002f05\",\"31\\u002f05\",\"01\\u002f06\",\"02\\u002f06\",\"03\\u002f06\",\"04\\u002f06\",\"05\\u002f06\",\"06\\u002f06\",\"09\\u002f06\",\"10\\u002f06\",\"11\\u002f06\",\"12\\u002f06\",\"13\\u002f06\",\"16\\u002f06\",\"17\\u002f06\",\"18\\u002f06\",\"19\\u002f06\"],\"xaxis\":\"x\",\"y\":{\"dtype\":\"f8\",\"bdata\":\"vLu7u7v7MEDv7u7u7u4nQN7d3d3d3SVAmpmZmZkZIUBEREREREQkQDMzMzMzsyxAiYiIiIgIJUCamZmZmRktQBERERERkSBAmpmZmZmZKEDNzMzMzEwjQERERERExCFAMzMzMzOzK0AiIiIiIqImQJqZmZmZmSFAVVVVVVVVJEAAAAAAAAD0P7y7u7u7uypAd3d3d3d3IkC8u7u7uzsjQM3MzMzMTCRAVVVVVVVVJ0B3d3d3d3ciQAAAAAAAACVAVVVVVVVVJECrqqqqqqomQA==\"},\"yaxis\":\"y\",\"type\":\"bar\"}],\"layout\":{\"template\":{\"data\":{\"histogram2dcontour\":[{\"type\":\"histogram2dcontour\",\"colorbar\":{\"outlinewidth\":0,\"ticks\":\"\"},\"colorscale\":[[0.0,\"#0d0887\"],[0.1111111111111111,\"#46039f\"],[0.2222222222222222,\"#7201a8\"],[0.3333333333333333,\"#9c179e\"],[0.4444444444444444,\"#bd3786\"],[0.5555555555555556,\"#d8576b\"],[0.6666666666666666,\"#ed7953\"],[0.7777777777777778,\"#fb9f3a\"],[0.8888888888888888,\"#fdca26\"],[1.0,\"#f0f921\"]]}],\"choropleth\":[{\"type\":\"choropleth\",\"colorbar\":{\"outlinewidth\":0,\"ticks\":\"\"}}],\"histogram2d\":[{\"type\":\"histogram2d\",\"colorbar\":{\"outlinewidth\":0,\"ticks\":\"\"},\"colorscale\":[[0.0,\"#0d0887\"],[0.1111111111111111,\"#46039f\"],[0.2222222222222222,\"#7201a8\"],[0.3333333333333333,\"#9c179e\"],[0.4444444444444444,\"#bd3786\"],[0.5555555555555556,\"#d8576b\"],[0.6666666666666666,\"#ed7953\"],[0.7777777777777778,\"#fb9f3a\"],[0.8888888888888888,\"#fdca26\"],[1.0,\"#f0f921\"]]}],\"heatmap\":[{\"type\":\"heatmap\",\"colorbar\":{\"outlinewidth\":0,\"ticks\":\"\"},\"colorscale\":[[0.0,\"#0d0887\"],[0.1111111111111111,\"#46039f\"],[0.2222222222222222,\"#7201a8\"],[0.3333333333333333,\"#9c179e\"],[0.4444444444444444,\"#bd3786\"],[0.5555555555555556,\"#d8576b\"],[0.6666666666666666,\"#ed7953\"],[0.7777777777777778,\"#fb9f3a\"],[0.8888888888888888,\"#fdca26\"],[1.0,\"#f0f921\"]]}],\"contourcarpet\":[{\"type\":\"contourcarpet\",\"colorbar\":{\"outlinewidth\":0,\"ticks\":\"\"}}],\"contour\":[{\"type\":\"contour\",\"colorbar\":{\"outlinewidth\":0,\"ticks\":\"\"},\"colorscale\":[[0.0,\"#0d0887\"],[0.1111111111111111,\"#46039f\"],[0.2222222222222222,\"#7201a8\"],[0.3333333333333333,\"#9c179e\"],[0.4444444444444444,\"#bd3786\"],[0.5555555555555556,\"#d8576b\"],[0.6666666666666666,\"#ed7953\"],[0.7777777777777778,\"#fb9f3a\"],[0.8888888888888888,\"#fdca26\"],[1.0,\"#f0f921\"]]}],\"surface\":[{\"type\":\"surface\",\"colorbar\":{\"outlinewidth\":0,\"ticks\":\"\"},\"colorscale\":[[0.0,\"#0d0887\"],[0.1111111111111111,\"#46039f\"],[0.2222222222222222,\"#7201a8\"],[0.3333333333333333,\"#9c179e\"],[0.4444444444444444,\"#bd3786\"],[0.5555555555555556,\"#d8576b\"],[0.6666666666666666,\"#ed7953\"],[0.7777777777777778,\"#fb9f3a\"],[0.8888888888888888,\"#fdca26\"],[1.0,\"#f0f921\"]]}],\"mesh3d\":[{\"type\":\"mesh3d\",\"colorbar\":{\"outlinewidth\":0,\"ticks\":\"\"}}],\"scatter\":[{\"fillpattern\":{\"fillmode\":\"overlay\",\"size\":10,\"solidity\":0.2},\"type\":\"scatter\"}],\"parcoords\":[{\"type\":\"parcoords\",\"line\":{\"colorbar\":{\"outlinewidth\":0,\"ticks\":\"\"}}}],\"scatterpolargl\":[{\"type\":\"scatterpolargl\",\"marker\":{\"colorbar\":{\"outlinewidth\":0,\"ticks\":\"\"}}}],\"bar\":[{\"error_x\":{\"color\":\"#2a3f5f\"},\"error_y\":{\"color\":\"#2a3f5f\"},\"marker\":{\"line\":{\"color\":\"#E5ECF6\",\"width\":0.5},\"pattern\":{\"fillmode\":\"overlay\",\"size\":10,\"solidity\":0.2}},\"type\":\"bar\"}],\"scattergeo\":[{\"type\":\"scattergeo\",\"marker\":{\"colorbar\":{\"outlinewidth\":0,\"ticks\":\"\"}}}],\"scatterpolar\":[{\"type\":\"scatterpolar\",\"marker\":{\"colorbar\":{\"outlinewidth\":0,\"ticks\":\"\"}}}],\"histogram\":[{\"marker\":{\"pattern\":{\"fillmode\":\"overlay\",\"size\":10,\"solidity\":0.2}},\"type\":\"histogram\"}],\"scattergl\":[{\"type\":\"scattergl\",\"marker\":{\"colorbar\":{\"outlinewidth\":0,\"ticks\":\"\"}}}],\"scatter3d\":[{\"type\":\"scatter3d\",\"line\":{\"colorbar\":{\"outlinewidth\":0,\"ticks\":\"\"}},\"marker\":{\"colorbar\":{\"outlinewidth\":0,\"ticks\":\"\"}}}],\"scattermap\":[{\"type\":\"scattermap\",\"marker\":{\"colorbar\":{\"outlinewidth\":0,\"ticks\":\"\"}}}],\"scattermapbox\":[{\"type\":\"scattermapbox\",\"marker\":{\"colorbar\":{\"outlinewidth\":0,\"ticks\":\"\"}}}],\"scatterternary\":[{\"type\":\"scatterternary\",\"marker\":{\"colorbar\":{\"outlinewidth\":0,\"ticks\":\"\"}}}],\"scattercarpet\":[{\"type\":\"scattercarpet\",\"marker\":{\"colorbar\":{\"outlinewidth\":0,\"ticks\":\"\"}}}],\"carpet\":[{\"aaxis\":{\"endlinecolor\":\"#2a3f5f\",\"gridcolor\":\"white\",\"linecolor\":\"white\",\"minorgridcolor\":\"white\",\"startlinecolor\":\"#2a3f5f\"},\"baxis\":{\"endlinecolor\":\"#2a3f5f\",\"gridcolor\":\"white\",\"linecolor\":\"white\",\"minorgridcolor\":\"white\",\"startlinecolor\":\"#2a3f5f\"},\"type\":\"carpet\"}],\"table\":[{\"cells\":{\"fill\":{\"color\":\"#EBF0F8\"},\"line\":{\"color\":\"white\"}},\"header\":{\"fill\":{\"color\":\"#C8D4E3\"},\"line\":{\"color\":\"white\"}},\"type\":\"table\"}],\"barpolar\":[{\"marker\":{\"line\":{\"color\":\"#E5ECF6\",\"width\":0.5},\"pattern\":{\"fillmode\":\"overlay\",\"size\":10,\"solidity\":0.2}},\"type\":\"barpolar\"}],\"pie\":[{\"automargin\":true,\"type\":\"pie\"}]},\"layout\":{\"autotypenumbers\":\"strict\",\"colorway\":[\"#636efa\",\"#EF553B\",\"#00cc96\",\"#ab63fa\",\"#FFA15A\",\"#19d3f3\",\"#FF6692\",\"#B6E880\",\"#FF97FF\",\"#FECB52\"],\"font\":{\"color\":\"#2a3f5f\"},\"hovermode\":\"closest\",\"hoverlabel\":{\"align\":\"left\"},\"paper_bgcolor\":\"white\",\"plot_bgcolor\":\"#E5ECF6\",\"polar\":{\"bgcolor\":\"#E5ECF6\",\"angularaxis\":{\"gridcolor\":\"white\",\"linecolor\":\"white\",\"ticks\":\"\"},\"radialaxis\":{\"gridcolor\":\"white\",\"linecolor\":\"white\",\"ticks\":\"\"}},\"ternary\":{\"bgcolor\":\"#E5ECF6\",\"aaxis\":{\"gridcolor\":\"white\",\"linecolor\":\"white\",\"ticks\":\"\"},\"baxis\":{\"gridcolor\":\"white\",\"linecolor\":\"white\",\"ticks\":\"\"},\"caxis\":{\"gridcolor\":\"white\",\"linecolor\":\"white\",\"ticks\":\"\"}},\"coloraxis\":{\"colorbar\":{\"outlinewidth\":0,\"ticks\":\"\"}},\"colorscale\":{\"sequential\":[[0.0,\"#0d0887\"],[0.1111111111111111,\"#46039f\"],[0.2222222222222222,\"#7201a8\"],[0.3333333333333333,\"#9c179e\"],[0.4444444444444444,\"#bd3786\"],[0.5555555555555556,\"#d8576b\"],[0.6666666666666666,\"#ed7953\"],[0.7777777777777778,\"#fb9f3a\"],[0.8888888888888888,\"#fdca26\"],[1.0,\"#f0f921\"]],\"sequentialminus\":[[0.0,\"#0d0887\"],[0.1111111111111111,\"#46039f\"],[0.2222222222222222,\"#7201a8\"],[0.3333333333333333,\"#9c179e\"],[0.4444444444444444,\"#bd3786\"],[0.5555555555555556,\"#d8576b\"],[0.6666666666666666,\"#ed7953\"],[0.7777777777777778,\"#fb9f3a\"],[0.8888888888888888,\"#fdca26\"],[1.0,\"#f0f921\"]],\"diverging\":[[0,\"#8e0152\"],[0.1,\"#c51b7d\"],[0.2,\"#de77ae\"],[0.3,\"#f1b6da\"],[0.4,\"#fde0ef\"],[0.5,\"#f7f7f7\"],[0.6,\"#e6f5d0\"],[0.7,\"#b8e186\"],[0.8,\"#7fbc41\"],[0.9,\"#4d9221\"],[1,\"#276419\"]]},\"xaxis\":{\"gridcolor\":\"white\",\"linecolor\":\"white\",\"ticks\":\"\",\"title\":{\"standoff\":15},\"zerolinecolor\":\"white\",\"automargin\":true,\"zerolinewidth\":2},\"yaxis\":{\"gridcolor\":\"white\",\"linecolor\":\"white\",\"ticks\":\"\",\"title\":{\"standoff\":15},\"zerolinecolor\":\"white\",\"automargin\":true,\"zerolinewidth\":2},\"scene\":{\"xaxis\":{\"backgroundcolor\":\"#E5ECF6\",\"gridcolor\":\"white\",\"linecolor\":\"white\",\"showbackground\":true,\"ticks\":\"\",\"zerolinecolor\":\"white\",\"gridwidth\":2},\"yaxis\":{\"backgroundcolor\":\"#E5ECF6\",\"gridcolor\":\"white\",\"linecolor\":\"white\",\"showbackground\":true,\"ticks\":\"\",\"zerolinecolor\":\"white\",\"gridwidth\":2},\"zaxis\":{\"backgroundcolor\":\"#E5ECF6\",\"gridcolor\":\"white\",\"linecolor\":\"white\",\"showbackground\":true,\"ticks\":\"\",\"zerolinecolor\":\"white\",\"gridwidth\":2}},\"shapedefaults\":{\"line\":{\"color\":\"#2a3f5f\"}},\"annotationdefaults\":{\"arrowcolor\":\"#2a3f5f\",\"arrowhead\":0,\"arrowwidth\":1},\"geo\":{\"bgcolor\":\"white\",\"landcolor\":\"#E5ECF6\",\"subunitcolor\":\"white\",\"showland\":true,\"showlakes\":true,\"lakecolor\":\"white\"},\"title\":{\"x\":0.05},\"mapbox\":{\"style\":\"light\"}}},\"xaxis\":{\"anchor\":\"y\",\"domain\":[0.0,1.0],\"title\":{\"text\":\"data_str\"}},\"yaxis\":{\"anchor\":\"x\",\"domain\":[0.0,1.0],\"title\":{\"text\":\"horas_trabalhadas\"}},\"legend\":{\"tracegroupgap\":0},\"title\":{\"text\":\"Horas Trabalhadas por Dia\"},\"barmode\":\"relative\"}}", "meal_chart": "{\"data\":[{\"hovertemplate\":\"data_str=%{x}\\u003cbr\\u003eintervalo_almoco=%{y}\\u003cextra\\u003e\\u003c\\u002fextra\\u003e\",\"legendgroup\":\"\",\"marker\":{\"color\":\"#636efa\",\"pattern\":{\"shape\":\"\"}},\"name\":\"\",\"orientation\":\"v\",\"showlegend\":false,\"textposition\":\"auto\",\"x\":[\"21\\u002f05\",\"22\\u002f05\",\"23\\u002f05\",\"24\\u002f05\",\"25\\u002f05\",\"26\\u002f05\",\"27\\u002f05\",\"28\\u002f05\",\"29\\u002f05\",\"30\\u002f05\",\"31\\u002f05\",\"01\\u002f06\",\"02\\u002f06\",\"03\\u002f06\",\"04\\u002f06\",\"05\\u002f06\",\"06\\u002f06\",\"09\\u002f06\",\"10\\u002f06\",\"11\\u002f06\",\"12\\u002f06\",\"13\\u002f06\",\"16\\u002f06\",\"17\\u002f06\",\"18\\u002f06\",\"19\\u002f06\"],\"xaxis\":\"x\",\"y\":{\"dtype\":\"f8\",\"bdata\":\"mpmZmZmZ9T9mZmZmZmbyP+\\u002fu7u7u7vI\\u002f3t3d3d3d8T\\u002fe3d3d3d31P4mIiIiIiPA\\u002f7+7u7u7u8j8AAAAAAADwP4iIiIiIiPQ\\u002fVVVVVVVV8T\\u002fe3d3d3d3xP6qqqqqqqv4\\u002fRERERERE8D\\u002fNzMzMzMz4P83MzMzMzPA\\u002fERERERER8T8AAAAAAAAAAERERERERPQ\\u002fzczMzMzM+D+rqqqqqqryP97d3d3d3fE\\u002fAAAAAAAA8D+rqqqqqqryPwAAAAAAAPA\\u002fVVVVVVVV9T+rqqqqqqryPw==\"},\"yaxis\":\"y\",\"type\":\"bar\"}],\"layout\":{\"template\":{\"data\":{\"histogram2dcontour\":[{\"type\":\"histogram2dcontour\",\"colorbar\":{\"outlinewidth\":0,\"ticks\":\"\"},\"colorscale\":[[0.0,\"#0d0887\"],[0.1111111111111111,\"#46039f\"],[0.2222222222222222,\"#7201a8\"],[0.3333333333333333,\"#9c179e\"],[0.4444444444444444,\"#bd3786\"],[0.5555555555555556,\"#d8576b\"],[0.6666666666666666,\"#ed7953\"],[0.7777777777777778,\"#fb9f3a\"],[0.8888888888888888,\"#fdca26\"],[1.0,\"#f0f921\"]]}],\"choropleth\":[{\"type\":\"choropleth\",\"colorbar\":{\"outlinewidth\":0,\"ticks\":\"\"}}],\"histogram2d\":[{\"type\":\"histogram2d\",\"colorbar\":{\"outlinewidth\":0,\"ticks\":\"\"},\"colorscale\":[[0.0,\"#0d0887\"],[0.1111111111111111,\"#46039f\"],[0.2222222222222222,\"#7201a8\"],[0.3333333333333333,\"#9c179e\"],[0.4444444444444444,\"#bd3786\"],[0.5555555555555556,\"#d8576b\"],[0.6666666666666666,\"#ed7953\"],[0.7777777777777778,\"#fb9f3a\"],[0.8888888888888888,\"#fdca26\"],[1.0,\"#f0f921\"]]}],\"heatmap\":[{\"type\":\"heatmap\",\"colorbar\":{\"outlinewidth\":0,\"ticks\":\"\"},\"colorscale\":[[0.0,\"#0d0887\"],[0.1111111111111111,\"#46039f\"],[0.2222222222222222,\"#7201a8\"],[0.3333333333333333,\"#9c179e\"],[0.4444444444444444,\"#bd3786\"],[0.5555555555555556,\"#d8576b\"],[0.6666666666666666,\"#ed7953\"],[0.7777777777777778,\"#fb9f3a\"],[0.8888888888888888,\"#fdca26\"],[1.0,\"#f0f921\"]]}],\"contourcarpet\":[{\"type\":\"contourcarpet\",\"colorbar\":{\"outlinewidth\":0,\"ticks\":\"\"}}],\"contour\":[{\"type\":\"contour\",\"colorbar\":{\"outlinewidth\":0,\"ticks\":\"\"},\"colorscale\":[[0.0,\"#0d0887\"],[0.1111111111111111,\"#46039f\"],[0.2222222222222222,\"#7201a8\"],[0.3333333333333333,\"#9c179e\"],[0.4444444444444444,\"#bd3786\"],[0.5555555555555556,\"#d8576b\"],[0.6666666666666666,\"#ed7953\"],[0.7777777777777778,\"#fb9f3a\"],[0.8888888888888888,\"#fdca26\"],[1.0,\"#f0f921\"]]}],\"surface\":[{\"type\":\"surface\",\"colorbar\":{\"outlinewidth\":0,\"ticks\":\"\"},\"colorscale\":[[0.0,\"#0d0887\"],[0.1111111111111111,\"#46039f\"],[0.2222222222222222,\"#7201a8\"],[0.3333333333333333,\"#9c179e\"],[0.4444444444444444,\"#bd3786\"],[0.5555555555555556,\"#d8576b\"],[0.6666666666666666,\"#ed7953\"],[0.7777777777777778,\"#fb9f3a\"],[0.8888888888888888,\"#fdca26\"],[1.0,\"#f0f921\"]]}],\"mesh3d\":[{\"type\":\"mesh3d\",\"colorbar\":{\"outlinewidth\":0,\"ticks\":\"\"}}],\"scatter\":[{\"fillpattern\":{\"fillmode\":\"overlay\",\"size\":10,\"solidity\":0.2},\"type\":\"scatter\"}],\"parcoords\":[{\"type\":\"parcoords\",\"line\":{\"colorbar\":{\"outlinewidth\":0,\"ticks\":\"\"}}}],\"scatterpolargl\":[{\"type\":\"scatterpolargl\",\"marker\":{\"colorbar\":{\"outlinewidth\":0,\"ticks\":\"\"}}}],\"bar\":[{\"error_x\":{\"color\":\"#2a3f5f\"},\"error_y\":{\"color\":\"#2a3f5f\"},\"marker\":{\"line\":{\"color\":\"#E5ECF6\",\"width\":0.5},\"pattern\":{\"fillmode\":\"overlay\",\"size\":10,\"solidity\":0.2}},\"type\":\"bar\"}],\"scattergeo\":[{\"type\":\"scattergeo\",\"marker\":{\"colorbar\":{\"outlinewidth\":0,\"ticks\":\"\"}}}],\"scatterpolar\":[{\"type\":\"scatterpolar\",\"marker\":{\"colorbar\":{\"outlinewidth\":0,\"ticks\":\"\"}}}],\"histogram\":[{\"marker\":{\"pattern\":{\"fillmode\":\"overlay\",\"size\":10,\"solidity\":0.2}},\"type\":\"histogram\"}],\"scattergl\":[{\"type\":\"scattergl\",\"marker\":{\"colorbar\":{\"outlinewidth\":0,\"ticks\":\"\"}}}],\"scatter3d\":[{\"type\":\"scatter3d\",\"line\":{\"colorbar\":{\"outlinewidth\":0,\"ticks\":\"\"}},\"marker\":{\"colorbar\":{\"outlinewidth\":0,\"ticks\":\"\"}}}],\"scattermap\":[{\"type\":\"scattermap\",\"marker\":{\"colorbar\":{\"outlinewidth\":0,\"ticks\":\"\"}}}],\"scattermapbox\":[{\"type\":\"scattermapbox\",\"marker\":{\"colorbar\":{\"outlinewidth\":0,\"ticks\":\"\"}}}],\"scatterternary\":[{\"type\":\"scatterternary\",\"marker\":{\"colorbar\":{\"outlinewidth\":0,\"ticks\":\"\"}}}],\"scattercarpet\":[{\"type\":\"scattercarpet\",\"marker\":{\"colorbar\":{\"outlinewidth\":0,\"ticks\":\"\"}}}],\"carpet\":[{\"aaxis\":{\"endlinecolor\":\"#2a3f5f\",\"gridcolor\":\"white\",\"linecolor\":\"white\",\"minorgridcolor\":\"white\",\"startlinecolor\":\"#2a3f5f\"},\"baxis\":{\"endlinecolor\":\"#2a3f5f\",\"gridcolor\":\"white\",\"linecolor\":\"white\",\"minorgridcolor\":\"white\",\"startlinecolor\":\"#2a3f5f\"},\"type\":\"carpet\"}],\"table\":[{\"cells\":{\"fill\":{\"color\":\"#EBF0F8\"},\"line\":{\"color\":\"white\"}},\"header\":{\"fill\":{\"color\":\"#C8D4E3\"},\"line\":{\"color\":\"white\"}},\"type\":\"table\"}],\"barpolar\":[{\"marker\":{\"line\":{\"color\":\"#E5ECF6\",\"width\":0.5},\"pattern\":{\"fillmode\":\"overlay\",\"size\":10,\"solidity\":0.2}},\"type\":\"barpolar\"}],\"pie\":[{\"automargin\":true,\"type\":\"pie\"}]},\"layout\":{\"autotypenumbers\":\"strict\",\"colorway\":[\"#636efa\",\"#EF553B\",\"#00cc96\",\"#ab63fa\",\"#FFA15A\",\"#19d3f3\",\"#FF6692\",\"#B6E880\",\"#FF97FF\",\"#FECB52\"],\"font\":{\"color\":\"#2a3f5f\"},\"hovermode\":\"closest\",\"hoverlabel\":{\"align\":\"left\"},\"paper_bgcolor\":\"white\",\"plot_bgcolor\":\"#E5ECF6\",\"polar\":{\"bgcolor\":\"#E5ECF6\",\"angularaxis\":{\"gridcolor\":\"white\",\"linecolor\":\"white\",\"ticks\":\"\"},\"radialaxis\":{\"gridcolor\":\"white\",\"linecolor\":\"white\",\"ticks\":\"\"}},\"ternary\":{\"bgcolor\":\"#E5ECF6\",\"aaxis\":{\"gridcolor\":\"white\",\"linecolor\":\"white\",\"ticks\":\"\"},\"baxis\":{\"gridcolor\":\"white\",\"linecolor\":\"white\",\"ticks\":\"\"},\"caxis\":{\"gridcolor\":\"white\",\"linecolor\":\"white\",\"ticks\":\"\"}},\"coloraxis\":{\"colorbar\":{\"outlinewidth\":0,\"ticks\":\"\"}},\"colorscale\":{\"sequential\":[[0.0,\"#0d0887\"],[0.1111111111111111,\"#46039f\"],[0.2222222222222222,\"#7201a8\"],[0.3333333333333333,\"#9c179e\"],[0.4444444444444444,\"#bd3786\"],[0.5555555555555556,\"#d8576b\"],[0.6666666666666666,\"#ed7953\"],[0.7777777777777778,\"#fb9f3a\"],[0.8888888888888888,\"#fdca26\"],[1.0,\"#f0f921\"]],\"sequentialminus\":[[0.0,\"#0d0887\"],[0.1111111111111111,\"#46039f\"],[0.2222222222222222,\"#7201a8\"],[0.3333333333333333,\"#9c179e\"],[0.4444444444444444,\"#bd3786\"],[0.5555555555555556,\"#d8576b\"],[0.6666666666666666,\"#ed7953\"],[0.7777777777777778,\"#fb9f3a\"],[0.8888888888888888,\"#fdca26\"],[1.0,\"#f0f921\"]],\"diverging\":[[0,\"#8e0152\"],[0.1,\"#c51b7d\"],[0.2,\"#de77ae\"],[0.3,\"#f1b6da\"],[0.4,\"#fde0ef\"],[0.5,\"#f7f7f7\"],[0.6,\"#e6f5d0\"],[0.7,\"#b8e186\"],[0.8,\"#7fbc41\"],[0.9,\"#4d9221\"],[1,\"#276419\"]]},\"xaxis\":{\"gridcolor\":\"white\",\"linecolor\":\"white\",\"ticks\":\"\",\"title\":{\"standoff\":15},\"zerolinecolor\":\"white\",\"automargin\":true,\"zerolinewidth\":2},\"yaxis\":{\"gridcolor\":\"white\",\"linecolor\":\"white\",\"ticks\":\"\",\"title\":{\"standoff\":15},\"zerolinecolor\":\"white\",\"automargin\":true,\"zerolinewidth\":2},\"scene\":{\"xaxis\":{\"backgroundcolor\":\"#E5ECF6\",\"gridcolor\":\"white\",\"linecolor\":\"white\",\"showbackground\":true,\"ticks\":\"\",\"zerolinecolor\":\"white\",\"gridwidth\":2},\"yaxis\":{\"backgroundcolor\":\"#E5ECF6\",\"gridcolor\":\"white\",\"linecolor\":\"white\",\"showbackground\":true,\"ticks\":\"\",\"zerolinecolor\":\"white\",\"gridwidth\":2},\"zaxis\":{\"backgroundcolor\":\"#E5ECF6\",\"gridcolor\":\"white\",\"linecolor\":\"white\",\"showbackground\":true,\"ticks\":\"\",\"zerolinecolor\":\"white\",\"gridwidth\":2}},\"shapedefaults\":{\"line\":{\"color\":\"#2a3f5f\"}},\"annotationdefaults\":{\"arrowcolor\":\"#2a3f5f\",\"arrowhead\":0,\"arrowwidth\":1},\"geo\":{\"bgcolor\":\"white\",\"landcolor\":\"#E5ECF6\",\"subunitcolor\":\"white\",\"showland\":true,\"showlakes\":true,\"lakecolor\":\"white\"},\"title\":{\"x\":0.05},\"mapbox\":{\"style\":\"light\"}}},\"xaxis\":{\"anchor\":\"y\",\"domain\":[0.0,1.0],\"title\":{\"text\":\"data_str\"}},\"yaxis\":{\"anchor\":\"x\",\"domain\":[0.0,1.0],\"title\":{\"text\":\"intervalo_almoco\"}},\"legend\":{\"tracegroupgap\":0},\"title\":{\"text\":\"Intervalos de Almo\\u00e7o por Dia\"},\"barmode\":\"relative\"}}", "pie_chart": "{\"data\":[{\"hole\":0.3,\"labels\":[\"Horas Contratuais\",\"Horas Extras\"],\"values\":[200,77.75],\"type\":\"pie\"}],\"layout\":{\"template\":{\"data\":{\"histogram2dcontour\":[{\"type\":\"histogram2dcontour\",\"colorbar\":{\"outlinewidth\":0,\"ticks\":\"\"},\"colorscale\":[[0.0,\"#0d0887\"],[0.1111111111111111,\"#46039f\"],[0.2222222222222222,\"#7201a8\"],[0.3333333333333333,\"#9c179e\"],[0.4444444444444444,\"#bd3786\"],[0.5555555555555556,\"#d8576b\"],[0.6666666666666666,\"#ed7953\"],[0.7777777777777778,\"#fb9f3a\"],[0.8888888888888888,\"#fdca26\"],[1.0,\"#f0f921\"]]}],\"choropleth\":[{\"type\":\"choropleth\",\"colorbar\":{\"outlinewidth\":0,\"ticks\":\"\"}}],\"histogram2d\":[{\"type\":\"histogram2d\",\"colorbar\":{\"outlinewidth\":0,\"ticks\":\"\"},\"colorscale\":[[0.0,\"#0d0887\"],[0.1111111111111111,\"#46039f\"],[0.2222222222222222,\"#7201a8\"],[0.3333333333333333,\"#9c179e\"],[0.4444444444444444,\"#bd3786\"],[0.5555555555555556,\"#d8576b\"],[0.6666666666666666,\"#ed7953\"],[0.7777777777777778,\"#fb9f3a\"],[0.8888888888888888,\"#fdca26\"],[1.0,\"#f0f921\"]]}],\"heatmap\":[{\"type\":\"heatmap\",\"colorbar\":{\"outlinewidth\":0,\"ticks\":\"\"},\"colorscale\":[[0.0,\"#0d0887\"],[0.1111111111111111,\"#46039f\"],[0.2222222222222222,\"#7201a8\"],[0.3333333333333333,\"#9c179e\"],[0.4444444444444444,\"#bd3786\"],[0.5555555555555556,\"#d8576b\"],[0.6666666666666666,\"#ed7953\"],[0.7777777777777778,\"#fb9f3a\"],[0.8888888888888888,\"#fdca26\"],[1.0,\"#f0f921\"]]}],\"contourcarpet\":[{\"type\":\"contourcarpet\",\"colorbar\":{\"outlinewidth\":0,\"ticks\":\"\"}}],\"contour\":[{\"type\":\"contour\",\"colorbar\":{\"outlinewidth\":0,\"ticks\":\"\"},\"colorscale\":[[0.0,\"#0d0887\"],[0.1111111111111111,\"#46039f\"],[0.2222222222222222,\"#7201a8\"],[0.3333333333333333,\"#9c179e\"],[0.4444444444444444,\"#bd3786\"],[0.5555555555555556,\"#d8576b\"],[0.6666666666666666,\"#ed7953\"],[0.7777777777777778,\"#fb9f3a\"],[0.8888888888888888,\"#fdca26\"],[1.0,\"#f0f921\"]]}],\"surface\":[{\"type\":\"surface\",\"colorbar\":{\"outlinewidth\":0,\"ticks\":\"\"},\"colorscale\":[[0.0,\"#0d0887\"],[0.1111111111111111,\"#46039f\"],[0.2222222222222222,\"#7201a8\"],[0.3333333333333333,\"#9c179e\"],[0.4444444444444444,\"#bd3786\"],[0.5555555555555556,\"#d8576b\"],[0.6666666666666666,\"#ed7953\"],[0.7777777777777778,\"#fb9f3a\"],[0.8888888888888888,\"#fdca26\"],[1.0,\"#f0f921\"]]}],\"mesh3d\":[{\"type\":\"mesh3d\",\"colorbar\":{\"outlinewidth\":0,\"ticks\":\"\"}}],\"scatter\":[{\"fillpattern\":{\"fillmode\":\"overlay\",\"size\":10,\"solidity\":0.2},\"type\":\"scatter\"}],\"parcoords\":[{\"type\":\"parcoords\",\"line\":{\"colorbar\":{\"outlinewidth\":0,\"ticks\":\"\"}}}],\"scatterpolargl\":[{\"type\":\"scatterpolargl\",\"marker\":{\"colorbar\":{\"outlinewidth\":0,\"ticks\":\"\"}}}],\"bar\":[{\"error_x\":{\"color\":\"#2a3f5f\"},\"error_y\":{\"color\":\"#2a3f5f\"},\"marker\":{\"line\":{\"color\":\"#E5ECF6\",\"width\":0.5},\"pattern\":{\"fillmode\":\"overlay\",\"size\":10,\"solidity\":0.2}},\"type\":\"bar\"}],\"scattergeo\":[{\"type\":\"scattergeo\",\"marker\":{\"colorbar\":{\"outlinewidth\":0,\"ticks\":\"\"}}}],\"scatterpolar\":[{\"type\":\"scatterpolar\",\"marker\":{\"colorbar\":{\"outlinewidth\":0,\"ticks\":\"\"}}}],\"histogram\":[{\"marker\":{\"pattern\":{\"fillmode\":\"overlay\",\"size\":10,\"solidity\":0.2}},\"type\":\"histogram\"}],\"scattergl\":[{\"type\":\"scattergl\",\"marker\":{\"colorbar\":{\"outlinewidth\":0,\"ticks\":\"\"}}}],\"scatter3d\":[{\"type\":\"scatter3d\",\"line\":{\"colorbar\":{\"outlinewidth\":0,\"ticks\":\"\"}},\"marker\":{\"colorbar\":{\"outlinewidth\":0,\"ticks\":\"\"}}}],\"scattermap\":[{\"type\":\"scattermap\",\"marker\":{\"colorbar\":{\"outlinewidth\":0,\"ticks\":\"\"}}}],\"scattermapbox\":[{\"type\":\"scattermapbox\",\"marker\":{\"colorbar\":{\"outlinewidth\":0,\"ticks\":\"\"}}}],\"scatterternary\":[{\"type\":\"scatterternary\",\"marker\":{\"colorbar\":{\"outlinewidth\":0,\"ticks\":\"\"}}}],\"scattercarpet\":[{\"type\":\"scattercarpet\",\"marker\":{\"colorbar\":{\"outlinewidth\":0,\"ticks\":\"\"}}}],\"carpet\":[{\"aaxis\":{\"endlinecolor\":\"#2a3f5f\",\"gridcolor\":\"white\",\"linecolor\":\"white\",\"minorgridcolor\":\"white\",\"startlinecolor\":\"#2a3f5f\"},\"baxis\":{\"endlinecolor\":\"#2a3f5f\",\"gridcolor\":\"white\",\"linecolor\":\"white\",\"minorgridcolor\":\"white\",\"startlinecolor\":\"#2a3f5f\"},\"type\":\"carpet\"}],\"table\":[{\"cells\":{\"fill\":{\"color\":\"#EBF0F8\"},\"line\":{\"color\":\"white\"}},\"header\":{\"fill\":{\"color\":\"#C8D4E3\"},\"line\":{\"color\":\"white\"}},\"type\":\"table\"}],\"barpolar\":[{\"marker\":{\"line\":{\"color\":\"#E5ECF6\",\"width\":0.5},\"pattern\":{\"fillmode\":\"overlay\",\"size\":10,\"solidity\":0.2}},\"type\":\"barpolar\"}],\"pie\":[{\"automargin\":true,\"type\":\"pie\"}]},\"layout\":{\"autotypenumbers\":\"strict\",\"colorway\":[\"#636efa\",\"#EF553B\",\"#00cc96\",\"#ab63fa\",\"#FFA15A\",\"#19d3f3\",\"#FF6692\",\"#B6E880\",\"#FF97FF\",\"#FECB52\"],\"font\":{\"color\":\"#2a3f5f\"},\"hovermode\":\"closest\",\"hoverlabel\":{\"align\":\"left\"},\"paper_bgcolor\":\"white\",\"plot_bgcolor\":\"#E5ECF6\",\"polar\":{\"bgcolor\":\"#E5ECF6\",\"angularaxis\":{\"gridcolor\":\"white\",\"linecolor\":\"white\",\"ticks\":\"\"},\"radialaxis\":{\"gridcolor\":\"white\",\"linecolor\":\"white\",\"ticks\":\"\"}},\"ternary\":{\"bgcolor\":\"#E5ECF6\",\"aaxis\":{\"gridcolor\":\"white\",\"linecolor\":\"white\",\"ticks\":\"\"},\"baxis\":{\"gridcolor\":\"white\",\"linecolor\":\"white\",\"ticks\":\"\"},\"caxis\":{\"gridcolor\":\"white\",\"linecolor\":\"white\",\"ticks\":\"\"}},\"coloraxis\":{\"colorbar\":{\"outlinewidth\":0,\"ticks\":\"\"}},\"colorscale\":{\"sequential\":[[0.0,\"#0d0887\"],[0.1111111111111111,\"#46039f\"],[0.2222222222222222,\"#7201a8\"],[0.3333333333333333,\"#9c179e\"],[0.4444444444444444,\"#bd3786\"],[0.5555555555555556,\"#d8576b\"],[0.6666666666666666,\"#ed7953\"],[0.7777777777777778,\"#fb9f3a\"],[0.8888888888888888,\"#fdca26\"],[1.0,\"#f0f921\"]],\"sequentialminus\":[[0.0,\"#0d0887\"],[0.1111111111111111,\"#46039f\"],[0.2222222222222222,\"#7201a8\"],[0.3333333333333333,\"#9c179e\"],[0.4444444444444444,\"#bd3786\"],[0.5555555555555556,\"#d8576b\"],[0.6666666666666666,\"#ed7953\"],[0.7777777777777778,\"#fb9f3a\"],[0.8888888888888888,\"#fdca26\"],[1.0,\"#f0f921\"]],\"diverging\":[[0,\"#8e0152\"],[0.1,\"#c51b7d\"],[0.2,\"#de77ae\"],[0.3,\"#f1b6da\"],[0.4,\"#fde0ef\"],[0.5,\"#f7f7f7\"],[0.6,\"#e6f5d0\"],[0.7,\"#b8e186\"],[0.8,\"#7fbc41\"],[0.9,\"#4d9221\"],[1,\"#276419\"]]},\"xaxis\":{\"gridcolor\":\"white\",\"linecolor\":\"white\",\"ticks\":\"\",\"title\":{\"standoff\":15},\"zerolinecolor\":\"white\",\"automargin\":true,\"zerolinewidth\":2},\"yaxis\":{\"gridcolor\":\"white\",\"linecolor\":\"white\",\"ticks\":\"\",\"title\":{\"standoff\":15},\"zerolinecolor\":\"white\",\"automargin\":true,\"zerolinewidth\":2},\"scene\":{\"xaxis\":{\"backgroundcolor\":\"#E5ECF6\",\"gridcolor\":\"white\",\"linecolor\":\"white\",\"showbackground\":true,\"ticks\":\"\",\"zerolinecolor\":\"white\",\"gridwidth\":2},\"yaxis\":{\"backgroundcolor\":\"#E5ECF6\",\"gridcolor\":\"white\",\"linecolor\":\"white\",\"showbackground\":true,\"ticks\":\"\",\"zerolinecolor\":\"white\",\"gridwidth\":2},\"zaxis\":{\"backgroundcolor\":\"#E5ECF6\",\"gridcolor\":\"white\",\"linecolor\":\"white\",\"showbackground\":true,\"ticks\":\"\",\"zerolinecolor\":\"white\",\"gridwidth\":2}},\"shapedefaults\":{\"line\":{\"color\":\"#2a3f5f\"}},\"annotationdefaults\":{\"arrowcolor\":\"#2a3f5f\",\"arrowhead\":0,\"arrowwidth\":1},\"geo\":{\"bgcolor\":\"white\",\"landcolor\":\"#E5ECF6\",\"subunitcolor\":\"white\",\"showland\":true,\"showlakes\":true,\"lakecolor\":\"white\"},\"title\":{\"x\":0.05},\"mapbox\":{\"style\":\"light\"}}}}}", "daily_data": [{"data": "2025-05-21", "data_display": "21/05/25 qua", "entrada": "06:24", "saida": "01:26", "horas_trabalhadas": 16.983333333333334, "intervalo_almoco": 1.35, "observacoes": "Excesso de 9.0h - poss\u00edvel irregularidade"}, {"data": "2025-05-22", "data_display": "22/05/25 qui", "entrada": "10:35", "saida": "23:42", "horas_trabalhadas": 11.966666666666667, "intervalo_almoco": 1.15, "observacoes": "Excesso de 4.0h - poss\u00edvel irregularidade"}, {"data": "2025-05-23", "data_display": "23/05/25 sex", "entrada": "08:05", "saida": "20:32", "horas_trabalhadas": 10.933333333333334, "intervalo_almoco": 1.1833333333333333, "observacoes": "Excesso de 2.9h - poss\u00edvel irregularidade"}, {"data": "2025-05-24", "data_display": "24/05/25 s\u00e1b", "entrada": "08:22", "saida": "18:02", "horas_trabalhadas": 8.55, "intervalo_almoco": 1.1166666666666667, "observacoes": "Excesso de 0.6h - poss\u00edvel irregularidade"}, {"data": "2025-05-25", "data_display": "25/05/25 dom", "entrada": "07:37", "saida": "19:07", "horas_trabalhadas": 10.133333333333333, "intervalo_almoco": 1.3666666666666667, "observacoes": "Excesso de 2.1h - poss\u00edvel irregularidade"}, {"data": "2025-05-26", "data_display": "26/05/25 seg", "entrada": "05:54", "saida": "21:17", "horas_trabalhadas": 14.35, "intervalo_almoco": 1.0333333333333334, "observacoes": "Excesso de 6.3h - poss\u00edvel irregularidade"}, {"data": "2025-05-27", "data_display": "27/05/25 ter", "entrada": "05:07", "saida": "18:20", "horas_trabalhadas": 10.516666666666667, "intervalo_almoco": 1.1833333333333333, "observacoes": "Excesso de 2.5h - poss\u00edvel irregularidade"}, {"data": "2025-05-28", "data_display": "28/05/25 qua", "entrada": "06:11", "saida": "22:06", "horas_trabalhadas": 14.55, "intervalo_almoco": 1.0, "observacoes": "Excesso de 6.6h - poss\u00edvel irregularidade"}, {"data": "2025-05-29", "data_display": "29/05/25 qui", "entrada": "08:37", "saida": "18:11", "horas_trabalhadas": 8.283333333333333, "intervalo_almoco": 1.2833333333333332, "observacoes": "Excesso de 0.3h - poss\u00edvel irregularidade"}, {"data": "2025-05-30", "data_display": "30/05/25 sex", "entrada": "08:03", "saida": "21:26", "horas_trabalhadas": 12.3, "intervalo_almoco": 1.0833333333333333, "observacoes": "Excesso de 4.3h - poss\u00edvel irregularidade"}, {"data": "2025-05-31", "data_display": "31/05/25 s\u00e1b", "entrada": "07:51", "saida": "18:37", "horas_trabalhadas": 9.65, "intervalo_almoco": 1.1166666666666667, "observacoes": "Excesso de 1.7h - poss\u00edvel irregularidade"}, {"data": "2025-06-01", "data_display": "01/06/25 dom", "entrada": "07:55", "saida": "18:43", "horas_trabalhadas": 8.883333333333333, "intervalo_almoco": 1.9166666666666665, "observacoes": "Excesso de 0.9h - poss\u00edvel irregularidade"}, {"data": "2025-06-02", "data_display": "02/06/25 seg", "entrada": "05:42", "saida": "20:52", "horas_trabalhadas": 13.85, "intervalo_almoco": 1.0166666666666666, "observacoes": "Excesso de 5.8h - poss\u00edvel irregularidade"}, {"data": "2025-06-03", "data_display": "03/06/25 ter", "entrada": "06:26", "saida": "19:18", "horas_trabalhadas": 11.316666666666666, "intervalo_almoco": 1.55, "observacoes": "Excesso de 3.3h - poss\u00edvel irregularidade"}, {"data": "2025-06-04", "data_display": "04/06/25 qua", "entrada": "08:47", "saida": "18:38", "horas_trabalhadas": 8.8, "intervalo_almoco": 1.05, "observacoes": "Excesso de 0.8h - poss\u00edvel irregularidade"}, {"data": "2025-06-05", "data_display": "05/06/25 qui", "entrada": "08:11", "saida": "19:45", "horas_trabalhadas": 10.166666666666666, "intervalo_almoco": 1.0666666666666667, "observacoes": "Excesso de 2.2h - poss\u00edvel irregularidade"}, {"data": "2025-06-06", "data_display": "06/06/25 sex", "entrada": "10:14", "saida": "11:29", "horas_trabalhadas": 1.25, "intervalo_almoco": 0, "observacoes": "Jornada abaixo do normal"}, {"data": "2025-06-09", "data_display": "09/06/25 seg", "entrada": "09:30", "saida": "00:46", "horas_trabalhadas": 13.366666666666667, "intervalo_almoco": 1.2666666666666666, "observacoes": "Excesso de 5.4h - poss\u00edvel irregularidade"}, {"data": "2025-06-10", "data_display": "10/06/25 ter", "entrada": "08:13", "saida": "19:00", "horas_trabalhadas": 9.233333333333333, "intervalo_almoco": 1.55, "observacoes": "Excesso de 1.2h - poss\u00edvel irregularidade"}, {"data": "2025-06-11", "data_display": "11/06/25 qua", "entrada": "08:13", "saida": "19:00", "horas_trabalhadas": 9.616666666666667, "intervalo_almoco": 1.1666666666666667, "observacoes": "Excesso de 1.6h - poss\u00edvel irregularidade"}, {"data": "2025-06-12", "data_display": "12/06/25 qui", "entrada": "07:44", "saida": "19:00", "horas_trabalhadas": 10.15, "intervalo_almoco": 1.1166666666666667, "observacoes": "Excesso de 2.2h - poss\u00edvel irregularidade"}, {"data": "2025-06-13", "data_display": "13/06/25 sex", "entrada": "08:20", "saida": "21:00", "horas_trabalhadas": 11.666666666666666, "intervalo_almoco": 1.0, "observacoes": "Excesso de 3.7h - poss\u00edvel irregularidade"}, {"data": "2025-06-16", "data_display": "16/06/25 seg", "entrada": "07:36", "saida": "18:00", "horas_trabalhadas": 9.233333333333333, "intervalo_almoco": 1.1666666666666667, "observacoes": "Excesso de 1.2h - poss\u00edvel irregularidade"}, {"data": "2025-06-17", "data_display": "17/06/25 ter", "entrada": "07:30", "saida": "19:00", "horas_trabalhadas": 10.5, "intervalo_almoco": 1.0, "observacoes": "Excesso de 2.5h - poss\u00edvel irregularidade"}, {"data": "2025-06-18", "data_display": "18/06/25 qua", "entrada": "07:00", "saida": "18:30", "horas_trabalhadas": 10.166666666666666, "intervalo_almoco": 1.3333333333333333, "observacoes": "Excesso de 2.2h - poss\u00edvel irregularidade"}, {"data": "2025-06-19", "data_display": "19/06/25 qui", "entrada": "07:00", "saida": "19:30", "horas_trabalhadas": 11.333333333333334, "intervalo_almoco": 1.1666666666666667, "observacoes": "Trabalho em feriado"}]};
+        
+        // Renderizar gráficos
+        if (chartsData.hours_chart) {
+            Plotly.newPlot('hoursChart', JSON.parse(chartsData.hours_chart));
+        }
+        
+        if (chartsData.meal_chart) {
+            Plotly.newPlot('mealChart', JSON.parse(chartsData.meal_chart));
+        }
+        
+        if (chartsData.pie_chart) {
+            Plotly.newPlot('pieChart', JSON.parse(chartsData.pie_chart));
+        }
+        
+        // Função para toggle da sidebar
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('open');
+        }
+        
+        // Função para mostrar PDF
+        function showPDF() {
+            const pdfViewer = document.getElementById('pdfViewer');
+            if (pdfViewer) {
+                pdfViewer.style.display = 'block';
+            }
+        }
+        
+        // Função para esconder PDF
+        function hidePDF() {
+            const pdfViewer = document.getElementById('pdfViewer');
+            if (pdfViewer) {
+                pdfViewer.style.display = 'none';
+            }
+        }
+        
+        // Fechar sidebar ao clicar fora
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const toggle = document.querySelector('.sidebar-toggle');
+            
+            if (!sidebar.contains(event.target) && !toggle.contains(event.target)) {
+                sidebar.classList.remove('open');
+            }
+        });
+        
+        // Responsive charts
+        window.addEventListener('resize', function() {
+            if (window.Plotly) {
+                Plotly.Plots.resize('hoursChart');
+                Plotly.Plots.resize('mealChart');
+                Plotly.Plots.resize('pieChart');
+            }
+        });
+    </script>
+</body>
+</html>
