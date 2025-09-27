@@ -1,0 +1,42 @@
+# Workflow para deploy do dashboard estático no GitHub Pages
+name: Deploy static content to Pages
+
+on:
+  # Executa em pushes para o branch static_dashboard
+  push:
+    branches: ["static_dashboard"]
+
+  # Permite executar manualmente no Actions tab
+  workflow_dispatch:
+
+# Configura permissões do GITHUB_TOKEN para permitir deployment no Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Permite apenas um deployment concorrente
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  # Job de deployment
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # Upload do diretório inteiro do repositório
+          path: '.'
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
