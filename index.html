@@ -1290,6 +1290,9 @@
                     <button onclick="downloadPDF()" style="background: #4CAF50; color: white; border: none; padding: 0.5rem 1rem; border-radius: 5px; margin-right: 0.5rem; cursor: pointer;">
                         <i class="fas fa-download"></i> Baixar PDF
                     </button>
+                    <button onclick="downloadExcel()" style="background: #2196F3; color: white; border: none; padding: 0.5rem 1rem; border-radius: 5px; margin-right: 0.5rem; cursor: pointer;" title="Baixar Análise Completa em Excel">
+                        <i class="fas fa-file-excel"></i> Baixar Excel
+                    </button>
                     <button onclick="togglePDFView()" id="togglePDFBtn" style="background: #FF5722; color: white; border: none; padding: 0.5rem 1rem; border-radius: 5px; cursor: pointer;">
                         <i class="fas fa-eye-slash"></i> Ocultar PDF
                     </button>
@@ -1739,6 +1742,27 @@
             setTimeout(() => {
                 btn.innerHTML = originalText;
                 btn.style.background = '#4CAF50';
+            }, 2000);
+        }
+
+        function downloadExcel() {
+            const link = document.createElement('a');
+            link.href = './folha_ponto_analise_20250928_114800.xlsx';
+            link.download = 'folha_ponto_analise_20250928_114800.xlsx';
+            link.target = '_blank';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            // Feedback visual
+            const btn = event.target.closest('button');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-check"></i> Baixando...';
+            btn.style.background = '#4CAF50';
+            
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.style.background = '#2196F3';
             }, 2000);
         }
     </script>
