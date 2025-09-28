@@ -167,6 +167,85 @@
             display: block;
         }
 
+        /* Ajustes específicos para páginas secundárias - não afetam o dashboard */
+        #data-analysis-page,
+        #compliance-page {
+            padding: 2rem;
+            width: calc(100vw - 350px);
+            height: 100vh;
+            margin-left: 350px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background: var(--bg-color);
+            z-index: 999;
+            overflow-y: auto;
+            overflow-x: hidden;
+            box-sizing: border-box;
+        }
+        
+        #data-analysis-page .section,
+        #compliance-page .section {
+            max-width: none;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* Melhorar experiência de scroll nas páginas secundárias */
+        #data-analysis-page::-webkit-scrollbar,
+        #compliance-page::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #data-analysis-page::-webkit-scrollbar-track,
+        #compliance-page::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        #data-analysis-page::-webkit-scrollbar-thumb,
+        #compliance-page::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 4px;
+        }
+
+        #data-analysis-page::-webkit-scrollbar-thumb:hover,
+        #compliance-page::-webkit-scrollbar-thumb:hover {
+            background: var(--secondary-color);
+        }
+
+        #data-analysis-page h2,
+        #compliance-page h2 {
+            font-size: 1.5rem;
+            word-wrap: break-word;
+        }
+
+        #data-analysis-page .metrics-grid,
+        #compliance-page .metrics-grid {
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        }
+
+        #compliance-page ul,
+        #compliance-page li {
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        /* Grid responsivo para página de conformidade */
+        .compliance-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        @media (max-width: 768px) {
+            .compliance-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+        }
+
         /* Cards */
         .section {
             background: var(--card-bg);
@@ -454,6 +533,13 @@
             .container {
                 margin-left: 300px;
             }
+            
+            #data-analysis-page,
+            #compliance-page {
+                width: calc(100vw - 300px);
+                margin-left: 300px;
+                overflow-y: auto;
+            }
         }
 
         @media (max-width: 768px) {
@@ -465,6 +551,14 @@
             .container {
                 margin-left: 280px;
                 padding: 0 1rem;
+            }
+            
+            #data-analysis-page,
+            #compliance-page {
+                width: calc(100vw - 280px);
+                margin-left: 280px;
+                padding: 1rem;
+                overflow-y: auto;
             }
 
             .main-header {
@@ -506,6 +600,13 @@
             .data-table th,
             .data-table td {
                 padding: 0.75rem 0.5rem;
+            }
+            
+            /* Ajustes específicos para mobile nas páginas secundárias */
+            #data-analysis-page .section,
+            #compliance-page .section {
+                padding: 1rem;
+                margin: 1rem 0;
             }
         }
 
@@ -1290,7 +1391,7 @@
                     <p>Este funcionário apresenta múltiplas violações às normas trabalhistas brasileiras.</p>
                 </div>
                 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin: 2rem 0;">
+                <div class="compliance-grid">
                     <div>
                         <h3 style="color: var(--danger-color); margin-bottom: 1rem;">
                             <i class="fas fa-times-circle"></i> Não Conformidades
@@ -1498,9 +1599,13 @@
                 navItem.classList.add('active');
             }
             
-            // Re-renderizar gráficos se for a página dashboard
+            // Controlar visibilidade do header
+            const header = document.querySelector('.main-header');
             if (pageId === 'dashboard') {
+                header.style.display = 'block';
                 setTimeout(renderCharts, 100);
+            } else {
+                header.style.display = 'none';
             }
         }
 
