@@ -1,3 +1,11 @@
+1. Create a new uv jupyter kernel 'uv run --with jupyter jupyter lab'
+2. Connect it to EDA.ipynb
+3. Run All to generate "timesheet_webapp_data.json"
+4. run 'uv run streamlit run dashboard/app.py' to start streamlit app of app.py
+
+
+
+
 # FolhaPonto - Employee Timesheet Analysis
 
 A comprehensive Python application for extracting, validating, and reporting on employee timesheet data from PDF files. This tool helps ensure compliance with labor regulations including lunch breaks, daily work hours, and rest periods between work days.
