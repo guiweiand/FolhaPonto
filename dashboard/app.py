@@ -6,7 +6,9 @@ from datetime import datetime, timedelta
 import json
 import os
 import base64
+import tempfile
 from pathlib import Path
+from pdf_processor import process_uploaded_pdf
 
 # Configuração da página
 st.set_page_config(
@@ -60,6 +62,23 @@ st.markdown("""
         border-radius: 5px;
         color: #2e7d32;
         font-weight: 500;
+    }
+    .upload-section {
+        background-color: #f8f9fa;
+        padding: 1rem;
+        border-radius: 8px;
+        border: 2px dashed #dee2e6;
+        margin-bottom: 1rem;
+    }
+    .upload-success {
+        background-color: #d4edda;
+        border-color: #28a745;
+        color: #155724;
+    }
+    .upload-error {
+        background-color: #f8d7da;
+        border-color: #dc3545;
+        color: #721c24;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -211,6 +230,37 @@ def process_timesheet_data_for_charts(timesheet_data):
     
     return daily_analysis
 
+def handle_pdf_upload(uploaded_file):
+    """Handle the uploaded PDF file and process it"""
+    if uploaded_file is not None:
+        try:
+            # Create a temporary file to save the uploaded PDF
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp_file:
+                temp_file.write(uploaded_file.read())
+                temp_file_path = temp_file.name
+            
+            # Process the PDF using our processor
+            webapp_data, status_msg = process_uploaded_pdf(temp_file_path)
+            
+            # Clean up the temporary file
+            os.unlink(temp_file_path)
+            
+            return webapp_data, status_msg
+            
+        except Exception as e:
+            return None, f"❌ Erro no processamento: {str(e)}"
+    
+    return None, "❌ Nenhum arquivo enviado"
+
+def refresh_dashboard_data():
+    """Force refresh of the dashboard data"""
+    # Clear any cached data
+    if 'data_cache' in st.session_state:
+        del st.session_state.data_cache
+    
+    # Trigger a rerun to refresh the dashboard
+    st.rerun()
+
 # Título principal
 st.markdown("""
 <div class="main-header">
@@ -223,26 +273,85 @@ st.markdown("""
 if 'current_page' not in st.session_state:
     st.session_state.current_page = "home"
 
-# Carregar dados usando a função de busca
-data_file_path = find_data_file()
+# Initialize session state for upload status
+if 'upload_status' not in st.session_state:
+    st.session_state.upload_status = None
+if 'processing_complete' not in st.session_state:
+    st.session_state.processing_complete = False
 
-if not data_file_path:
+# === SIDEBAR FILE UPLOAD SECTION ===
+st.sidebar.header("📤 Upload Nova Ficha de Ponto")
+
+uploaded_file = st.sidebar.file_uploader(
+    "Selecione o arquivo PDF da ficha de ponto:",
+    type=['pdf'],
+    help="Faça upload de um arquivo PDF contendo a ficha de ponto para análise."
+)
+
+if uploaded_file is not None:
+    st.sidebar.info(f"📄 Arquivo selecionado: {uploaded_file.name}")
+    
+    # Process button
+    if st.sidebar.button("🔄 Processar Arquivo", use_container_width=True, type="primary"):
+        with st.sidebar:
+            with st.spinner("Processando arquivo PDF..."):
+                webapp_data, status_msg = handle_pdf_upload(uploaded_file)
+                
+                if webapp_data:
+                    st.session_state.upload_status = "success"
+                    st.session_state.processing_complete = True
+                    st.sidebar.success("✅ Processamento concluído!")
+                    st.sidebar.info("📊 Dashboard será atualizado com os novos dados.")
+                    # Force refresh to show new data
+                    st.rerun()
+                else:
+                    st.session_state.upload_status = "error"
+                    st.sidebar.error("❌ Erro no processamento!")
+                    st.sidebar.error(status_msg)
+
+# Display upload status
+if st.session_state.upload_status == "success":
+    st.sidebar.success("✅ Último upload processado com sucesso!")
+    if st.sidebar.button("🔄 Novo Upload", use_container_width=True):
+        st.session_state.upload_status = None
+        st.session_state.processing_complete = False
+        st.rerun()
+elif st.session_state.upload_status == "error":
+    st.sidebar.error("❌ Erro no último upload!")
+    if st.sidebar.button("🔄 Tentar Novamente", use_container_width=True):
+        st.session_state.upload_status = None
+        st.rerun()
+
+st.sidebar.markdown("---")
+
+# === DATA LOADING SECTION ===
+# Try to load data, with fallback handling
+data_file_path = find_data_file()
+data = None
+
+if data_file_path:
+    data = load_json_data(data_file_path)
+
+if data is None:
+    st.sidebar.warning("⚠️ Nenhum dado carregado")
     st.error("Arquivo de dados 'timesheet_webapp_data.json' não encontrado!")
-    st.info("Certifique-se de que o arquivo está em um dos seguintes locais:")
-    st.info("- Diretório raiz do projeto")
-    st.info("- src/folhaponto/")
-    st.info("- dashboard/")
+    st.info("**Opções disponíveis:**")
+    st.info("1. 📤 Faça upload de uma ficha de ponto PDF usando o formulário na barra lateral")
+    st.info("2. 📁 Certifique-se de que existe um arquivo timesheet_webapp_data.json em:")
+    st.info("   - Diretório raiz do projeto")
+    st.info("   - src/folhaponto/")
+    st.info("   - dashboard/")
     st.stop()
 
 # Sidebar para informações do arquivo
-st.sidebar.header("📁 Dados Carregados")
+st.sidebar.header("📁 Dados Atuais")
 st.sidebar.success("✅ timesheet_webapp_data.json")
-st.sidebar.write(f"**Localização:** {Path(data_file_path).name}")
-
-# Carregar dados
-data = load_json_data(data_file_path)
-if data is None:
-    st.stop()
+if data_file_path:
+    st.sidebar.write(f"**Localização:** {Path(data_file_path).name}")
+    
+    # Get last modified time
+    mod_time = datetime.fromtimestamp(os.path.getmtime(data_file_path))
+    st.sidebar.write(f"**Última atualização:** {mod_time.strftime('%d/%m/%Y %H:%M')}")
 
 # Extrair informações básicas
 employee_info = data.get('employee', {})
@@ -283,11 +392,6 @@ st.sidebar.write(f"**CPF:** {employee_info.get('cpf', 'N/A')}")
 st.sidebar.write(f"**Empresa:** {company_info.get('name', 'N/A')}")
 st.sidebar.write(f"**CNPJ:** {company_info.get('cnpj', 'N/A')}")
 st.sidebar.write(f"**Período:** {period_info}")
-
-# Mostrar informações do arquivo carregado
-st.sidebar.markdown("---")
-st.sidebar.header("📊 Dados Carregados")
-st.sidebar.write("✅ Dados Unificados do Timesheet")
 
 # Botão para visualizar PDF
 st.sidebar.markdown("---")
