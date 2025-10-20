@@ -173,6 +173,8 @@ def process_timesheet_data_for_charts(timesheet_data):
     """Converte os dados do timesheet para o formato esperado pelos gráficos"""
     daily_analysis = []
     
+    # Primeiro, vamos coletar todos os dados válidos e ordenar por data
+    valid_entries = []
     for entry in timesheet_data:
         # Pular entradas que não são de trabalho
         if entry.get('tipo') not in ['Trabalho', 'Feriado']:
@@ -193,40 +195,102 @@ def process_timesheet_data_for_charts(timesheet_data):
                 year = '20' + year
             data_iso = f"{year}-{month}-{day}"
             
-            # Converter horas trabalhadas de "HH:MM" para decimal
-            jornada_str = entry.get('jornada_diaria', '00:00')
-            horas_trabalhadas = time_to_hours(jornada_str)
-            
-            # Converter intervalo de refeição
-            refeicao_str = entry.get('total_refeicao', '00:00')
-            intervalo_almoco = time_to_hours(refeicao_str)
-            
-            # Criar observações baseadas no tipo e problemas
-            observacoes = ""
-            if entry.get('tipo') == 'Feriado':
-                observacoes = "Trabalho em feriado"
-            elif horas_trabalhadas > 8:
-                excesso = horas_trabalhadas - 8
-                observacoes = f"Excesso de {excesso:.1f}h - possível irregularidade"
-            elif horas_trabalhadas < 8:
-                observacoes = "Jornada abaixo do normal"
-            
-            daily_entry = {
-                'data': data_iso,
-                'entrada': entry.get('jornada_inicio', ''),
-                'saida_almoco': '',  # Não disponível nos dados atuais
-                'retorno_almoco': '',  # Não disponível nos dados atuais
-                'saida': entry.get('jornada_fim', ''),
-                'horas_trabalhadas': horas_trabalhadas,
-                'intervalo_almoco': intervalo_almoco,
-                'observacoes': observacoes
-            }
-            
-            daily_analysis.append(daily_entry)
+            valid_entries.append({
+                'data_original': data_str,
+                'data_iso': data_iso,
+                'data_datetime': datetime.strptime(data_iso, '%Y-%m-%d'),
+                'entry': entry
+            })
             
         except (ValueError, IndexError, AttributeError):
             # Pular entradas com problemas na data
             continue
+    
+    # Ordenar por data
+    valid_entries.sort(key=lambda x: x['data_datetime'])
+    
+    # Processar cada entrada e calcular períodos de descanso
+    for i, item in enumerate(valid_entries):
+        entry = item['entry']
+        data_iso = item['data_iso']
+        
+        # Converter horas trabalhadas de "HH:MM" para decimal
+        jornada_str = entry.get('jornada_diaria', '00:00')
+        horas_trabalhadas = time_to_hours(jornada_str)
+        
+        # Converter intervalo de refeição
+        refeicao_str = entry.get('total_refeicao', '00:00')
+        intervalo_almoco = time_to_hours(refeicao_str)
+        
+        # Calcular período de descanso (tempo entre o fim de uma jornada e início da próxima)
+        periodo_descanso = 0
+        if i > 0:  # Não é o primeiro dia
+            try:
+                # Pegar o horário de saída do dia anterior
+                prev_entry = valid_entries[i-1]['entry']
+                prev_saida = prev_entry.get('jornada_fim', '')
+                
+                # Pegar o horário de entrada do dia atual
+                curr_entrada = entry.get('jornada_inicio', '')
+                
+                if prev_saida and curr_entrada:
+                    # Converter para datetime para calcular diferença
+                    prev_date = valid_entries[i-1]['data_datetime']
+                    curr_date = item['data_datetime']
+                    
+                    # Converter horários para datetime completo
+                    prev_saida_parts = prev_saida.split(':')
+                    curr_entrada_parts = curr_entrada.split(':')
+                    
+                    if len(prev_saida_parts) == 2 and len(curr_entrada_parts) == 2:
+                        prev_saida_dt = prev_date.replace(
+                            hour=int(prev_saida_parts[0]), 
+                            minute=int(prev_saida_parts[1])
+                        )
+                        curr_entrada_dt = curr_date.replace(
+                            hour=int(curr_entrada_parts[0]), 
+                            minute=int(curr_entrada_parts[1])
+                        )
+                        
+                        # Calcular diferença em horas
+                        delta = curr_entrada_dt - prev_saida_dt
+                        periodo_descanso = delta.total_seconds() / 3600
+                        
+                        # Garantir que não seja negativo
+                        periodo_descanso = max(0, periodo_descanso)
+                        
+            except (ValueError, IndexError, AttributeError):
+                periodo_descanso = 0
+        
+        # Criar observações baseadas no tipo e problemas
+        observacoes = ""
+        if entry.get('tipo') == 'Feriado':
+            observacoes = "Trabalho em feriado"
+        elif horas_trabalhadas > 8:
+            excesso = horas_trabalhadas - 8
+            observacoes = f"Excesso de {excesso:.1f}h - possível irregularidade"
+        elif horas_trabalhadas < 8:
+            observacoes = "Jornada abaixo do normal"
+        
+        # Adicionar observação sobre descanso insuficiente
+        if periodo_descanso > 0 and periodo_descanso < 11:
+            if observacoes:
+                observacoes += " | "
+            observacoes += f"Descanso insuficiente: {periodo_descanso:.1f}h"
+        
+        daily_entry = {
+            'data': data_iso,
+            'entrada': entry.get('jornada_inicio', ''),
+            'saida_almoco': '',  # Não disponível nos dados atuais
+            'retorno_almoco': '',  # Não disponível nos dados atuais
+            'saida': entry.get('jornada_fim', ''),
+            'horas_trabalhadas': horas_trabalhadas,
+            'intervalo_almoco': intervalo_almoco,
+            'periodo_descanso': periodo_descanso,
+            'observacoes': observacoes
+        }
+        
+        daily_analysis.append(daily_entry)
     
     return daily_analysis
 
@@ -512,47 +576,143 @@ else:
         if daily_data:
             df_daily = pd.DataFrame(daily_data)
             
-            # Converter datas
+            # Converter datas e manter ordem cronológica
             df_daily['data'] = pd.to_datetime(df_daily['data'])
+            df_daily = df_daily.sort_values('data')  # Garantir ordem cronológica
             df_daily['data_str'] = df_daily['data'].dt.strftime('%d/%m')
             
-            col1, col2 = st.columns(2)
-        
-            with col1:
-                # Gráfico de horas trabalhadas por dia
-                fig_hours = px.bar(
-                    df_daily, 
-                    x='data_str', 
-                    y='horas_trabalhadas',
-                    title="Horas Trabalhadas por Dia",
-                    color='horas_trabalhadas',
-                    color_continuous_scale='RdYlGn_r'
-                )
-                fig_hours.add_hline(y=8, line_dash="dash", line_color="red", annotation_text="Limite 8h")
-                fig_hours.add_hline(y=10, line_dash="dash", line_color="orange", annotation_text="Limite 10h")
-                fig_hours.update_layout(
-                    xaxis_title="Data",
-                    yaxis_title="Horas",
-                    showlegend=False
-                )
-                st.plotly_chart(fig_hours, use_container_width=True)
+            # Gráfico de horas trabalhadas por dia
+            # Criar coluna de cor baseada nas horas trabalhadas
+            def get_color_category(hours):
+                if hours < 8:
+                    return 'Normal (< 8h)'
+                elif hours <= 10:
+                    return 'Atenção (8-10h)'
+                else:
+                    return 'Crítico (> 10h)'
             
-            with col2:
-                # Gráfico de intervalos de almoço
-                fig_meal = px.bar(
-                    df_daily,
-                    x='data_str',
-                    y='intervalo_almoco',
-                    title="Intervalos de Almoço por Dia",
-                    color_discrete_sequence=['#2E86AB']
+            df_daily['categoria_horas'] = df_daily['horas_trabalhadas'].apply(get_color_category)
+            
+            # Definir cores personalizadas
+            color_map = {
+                'Normal (< 8h)': '#4CAF50',      # Verde
+                'Atenção (8-10h)': '#FF9800',    # Laranja
+                'Crítico (> 10h)': '#F44336'     # Vermelho
+            }
+            
+            fig_hours = px.bar(
+                df_daily, 
+                x='data_str', 
+                y='horas_trabalhadas',
+                title="Horas Trabalhadas por Dia",
+                color='categoria_horas',
+                color_discrete_map=color_map,
+                category_orders={'data_str': df_daily['data_str'].tolist()}  # Manter ordem cronológica
+            )
+            fig_hours.add_hline(y=8, line_dash="dash", line_color="red", annotation_text="Limite 8h")
+            fig_hours.add_hline(y=10, line_dash="dash", line_color="orange", annotation_text="Limite 10h")
+            fig_hours.update_layout(
+                xaxis_title="Data",
+                yaxis_title="Horas",
+                showlegend=True,
+                height=400,
+                legend=dict(
+                    orientation="h",
+                    yanchor="bottom",
+                    y=1.02,
+                    xanchor="right",
+                    x=1
                 )
-                fig_meal.add_hline(y=1, line_dash="dash", line_color="red", annotation_text="Mínimo 1h")
-                fig_meal.update_layout(
+            )
+            st.plotly_chart(fig_hours, use_container_width=True)
+            
+            # Gráfico de intervalos de almoço
+            # Criar coluna de cor baseada nos intervalos de almoço
+            def get_meal_color_category(hours):
+                if hours >= 1:
+                    return 'Adequado (≥ 1h)'
+                else:
+                    return 'Insuficiente (< 1h)'
+            
+            df_daily['categoria_almoco'] = df_daily['intervalo_almoco'].apply(get_meal_color_category)
+            
+            # Definir cores personalizadas para intervalos de almoço
+            meal_color_map = {
+                'Adequado (≥ 1h)': '#4CAF50',        # Verde
+                'Insuficiente (< 1h)': '#F44336'     # Vermelho
+            }
+            
+            fig_meal = px.bar(
+                df_daily,
+                x='data_str',
+                y='intervalo_almoco',
+                title="Intervalos de Almoço por Dia",
+                color='categoria_almoco',
+                color_discrete_map=meal_color_map,
+                category_orders={'data_str': df_daily['data_str'].tolist()}  # Manter ordem cronológica
+            )
+            fig_meal.add_hline(y=1, line_dash="dash", line_color="red", annotation_text="Mínimo 1h")
+            fig_meal.update_layout(
+                xaxis_title="Data",
+                yaxis_title="Horas",
+                showlegend=True,
+                height=400,
+                legend=dict(
+                    orientation="h",
+                    yanchor="bottom",
+                    y=1.02,
+                    xanchor="right",
+                    x=1
+                )
+            )
+            st.plotly_chart(fig_meal, use_container_width=True)
+            
+            # Gráfico de períodos de descanso
+            # Filtrar apenas dados com período de descanso > 0 (excluir primeiro dia)
+            df_rest = df_daily[df_daily['periodo_descanso'] > 0]
+            
+            if len(df_rest) > 0:
+                # Criar coluna de cor baseada nos períodos de descanso
+                def get_rest_color_category(hours):
+                    if hours >= 11:
+                        return 'Adequado (≥ 11h)'
+                    else:
+                        return 'Insuficiente (< 11h)'
+                
+                df_rest['categoria_descanso'] = df_rest['periodo_descanso'].apply(get_rest_color_category)
+                
+                # Definir cores personalizadas para períodos de descanso
+                rest_color_map = {
+                    'Adequado (≥ 11h)': '#4CAF50',        # Verde
+                    'Insuficiente (< 11h)': '#F44336'     # Vermelho
+                }
+                
+                fig_rest = px.bar(
+                    df_rest,
+                    x='data_str',
+                    y='periodo_descanso',
+                    title="Períodos de Descanso",
+                    color='categoria_descanso',
+                    color_discrete_map=rest_color_map,
+                    category_orders={'data_str': df_rest['data_str'].tolist()}  # Manter ordem cronológica
+                )
+                fig_rest.add_hline(y=11, line_dash="dash", line_color="red", annotation_text="Mínimo 11h")
+                fig_rest.update_layout(
                     xaxis_title="Data",
                     yaxis_title="Horas",
-                    showlegend=False
+                    showlegend=True,
+                    height=400,
+                    legend=dict(
+                        orientation="h",
+                        yanchor="bottom",
+                        y=1.02,
+                        xanchor="right",
+                        x=1
+                    )
                 )
-                st.plotly_chart(fig_meal, use_container_width=True)
+                st.plotly_chart(fig_rest, use_container_width=True)
+            else:
+                st.info("Dados insuficientes para calcular períodos de descanso (necessário pelo menos 2 dias)")
 
     # KPIs de desempenho
     if compliance_data and 'metricas_qualidade' in compliance_data:
@@ -845,6 +1005,7 @@ else:
             display_df['data'] = display_df['data'].dt.strftime('%d/%m/%Y')
             display_df['horas_trabalhadas'] = display_df['horas_trabalhadas'].round(2)
             display_df['intervalo_almoco'] = display_df['intervalo_almoco'].round(2)
+            display_df['periodo_descanso'] = display_df['periodo_descanso'].round(2)
             
             # Renomear colunas
             column_names = {
@@ -855,6 +1016,7 @@ else:
                 'saida': 'Saída',
                 'horas_trabalhadas': 'Horas Trabalhadas',
                 'intervalo_almoco': 'Intervalo Almoço',
+                'periodo_descanso': 'Período Descanso (h)',
                 'observacoes': 'Observações'
             }
             display_df = display_df.rename(columns=column_names)
